@@ -1,16 +1,7 @@
 "use client";
 
-import React from "react";
+import { InternProfileForm } from "@/app/_types/Intern";
 import { useForm } from "react-hook-form";
-
-type InternProfileForm = {
-  name: string;
-  university: string;
-  grade: string;
-  bio: string;
-  github_url: string;
-  portfolio_url: string;
-};
 
 export default function page() {
   const {
