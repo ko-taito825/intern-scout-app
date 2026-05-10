@@ -7,7 +7,7 @@ export default function page() {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     reset,
   } = useForm<InternProfileForm>();
   const onSubmit = async (data: InternProfileForm) => {
@@ -36,25 +36,41 @@ export default function page() {
           <p>プロフィール情報を入力してください。</p>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <input
-              {...register("name")}
+              {...register("name", { required: "名前は必須です" })}
               placeholder="名前"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
             />
+            {errors.name && (
+              <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+            )}
             <input
-              {...register("university")}
+              {...register("university", { required: "大学名は必須です" })}
               placeholder="大学"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
             />
+            {errors.university && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.university.message}
+              </p>
+            )}
             <input
-              {...register("grade")}
+              {...register("grade", { required: "学年は必須です" })}
               placeholder="学年"
               className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
             />
+            {errors.grade && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.grade.message}
+              </p>
+            )}
             <textarea
-              {...register("bio")}
-              placeholder="自己紹介"
+              {...register("bio", { required: "自己PRを記入してください" })}
+              placeholder="自己PR"
               className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
             />
+            {errors.bio && (
+              <p className="mt-1 text-sm text-red-500">{errors.bio.message}</p>
+            )}
             <input
               {...register("github_url")}
               placeholder="Github URL"
