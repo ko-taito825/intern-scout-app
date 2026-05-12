@@ -54,7 +54,7 @@ export default function page() {
             )}
             <textarea
               {...register("description", { required: "企業説明は必須です" })}
-              placeholder="企業説明"
+              placeholder="企業説明(技術スタック/価値観/開発体制など)"
               className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
             />
             {errors.description && (

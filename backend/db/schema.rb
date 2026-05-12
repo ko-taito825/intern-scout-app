@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_10_231910) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_053209) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -38,6 +38,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_10_231910) do
     t.index ["user_id"], name: "index_intern_profiles_on_user_id"
   end
 
+  create_table "messages", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.bigint "scout_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["scout_id"], name: "index_messages_on_scout_id"
+  end
+
+  create_table "scouts", force: :cascade do |t|
+    t.bigint "company_user_id"
+    t.datetime "created_at", null: false
+    t.bigint "intern_user_id"
+    t.string "status"
+    t.datetime "updated_at", null: false
+    t.index ["company_user_id"], name: "index_scouts_on_company_user_id"
+    t.index ["intern_user_id"], name: "index_scouts_on_intern_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "role"
@@ -46,4 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_10_231910) do
 
   add_foreign_key "company_profiles", "users"
   add_foreign_key "intern_profiles", "users"
+  add_foreign_key "messages", "scouts"
+  add_foreign_key "scouts", "users", column: "company_user_id"
+  add_foreign_key "scouts", "users", column: "intern_user_id"
 end
