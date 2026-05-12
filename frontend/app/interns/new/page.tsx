@@ -65,7 +65,7 @@ export default function page() {
             )}
             <textarea
               {...register("bio", { required: "自己PRを記入してください" })}
-              placeholder="自己PR"
+              placeholder="自己PR(強み、何をどんな考えで作ったのか)"
               className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-black"
             />
             {errors.bio && (
