@@ -1,12 +1,25 @@
 class Api::InternProfilesController < ApplicationController
   def index
     intern_profiles = InternProfile.all
-    render json: intern_profiles
+    # 後で簡易ログイン実装時に動的なIDに変更する
+    current_company_user_id = 1
+    scouted_intern_user_ids = Scout.where(company_user_id: current_company_user_id).pluck(:intern_user_id)
+
+    result = intern_profiles.map do |profile|
+      profile.as_json.merge(scouted: scouted_intern_user_ids.include?(profile.user_id))
+    end
+    render json: result
   end
 
   def show
     intern_profile = InternProfile.find(params[:id])
-    render json: intern_profile
+    # 後で簡易ログイン実装時に動的なIDに変更する
+    current_company_user_id = 1
+    is_scouted = Scout.exists?(
+      company_user_id: current_company_user_id,
+      intern_user_id: intern_profile.user_id
+    )
+    render json: intern_profile.as_json.merge(scouted: is_scouted)
   end
 
   def create

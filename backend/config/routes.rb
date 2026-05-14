@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   namespace :api do
     resources :intern_profiles, only: [ :index, :show, :create ]
     resources :company_profiles, only: [ :index, :show, :create ]
-    resources :scouts, only: [ :create ] do
+    resources :scouts, only: [ :index, :create ] do
       resources :messages, only: [ :index, :create]
     end
   end
