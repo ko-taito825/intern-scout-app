@@ -5,6 +5,16 @@ class Api::ScoutsController < ApplicationController
       intern_user_id: params[:intern_user_id],
       status: "pending"
     )
-    render json: scout, status: :created
+    if scout.save
+       render json: scout, status: :created
+    else
+      render json: {error: "すでにスカウト済みです", status: :unprocessable_entity}
+    end
+   
+  end
+
+  def index
+    scouts = Scout.where(company_user_id: params[:company_user_id])
+    render json: scouts
   end
 end
