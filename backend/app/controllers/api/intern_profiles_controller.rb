@@ -35,4 +35,31 @@ class Api::InternProfilesController < ApplicationController
     )
     render json: intern_profile, status: :created
   end
+
+  def me
+    #簡易ログイン中のインターン生(id:2)のプロフィールを探す
+    profile = InternProfile.find_by(user_id:2)
+
+    if profile
+      render json: profile
+    else
+      render json: {error:"プロフィール未登録です"}, status: :not_found 
+    end
+  end
+
+  def update
+      # ログイン中（と仮定している）ユーザーのプロフィールを探す
+    profile = InternProfile.find_by(user_id: 2)
+    if profile.update(intern_profile_params)
+      render json: profile
+    else
+      render json: profile.error, status: :unprocessable_entity
+    end
+    
+  end
+  private
+
+    def intern_profile_params
+      params.require(:intern_profile).permit(:name, :university, :grade, :bio, :github_url, :portfolio_url)
+    end
 end

@@ -102,25 +102,29 @@ export default function page() {
                         <p className="w-28 font-semibold text-gray-800">
                           GitHub
                         </p>
-                        <a
-                          href={intern.github_url}
-                          target="_blank"
-                          className="break-all text-blue-600 hover:underline"
-                        >
-                          {intern.github_url}
-                        </a>
+                        {intern.github_url && (
+                          <a
+                            href={intern.github_url}
+                            target="_blank"
+                            className="break-all text-blue-600 hover:underline"
+                          >
+                            {intern.github_url}
+                          </a>
+                        )}
                       </div>
                       <div className="flex">
                         <p className="w-28 font-semibold text-gray-800">
                           ポートフォリオ
                         </p>
-                        <a
-                          href={intern.portfolio_url}
-                          target="_blank"
-                          className="break-all text-blue-600 hover:underline"
-                        >
-                          {intern.portfolio_url}
-                        </a>
+                        {intern.portfolio_url && (
+                          <a
+                            href={intern.portfolio_url}
+                            target="_blank"
+                            className="break-all text-blue-600 hover:underline"
+                          >
+                            {intern.portfolio_url}
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -47,6 +47,8 @@ export default function page() {
       );
       if (!res.ok) return;
       const data = await res.json();
+      console.log("チェック対象のインターン生ID:", internUserId);
+      console.log("バックエンドから取得したスカウト一覧:", data);
       const scouted = data.some(
         (scout: { intern_user_id: number }) =>
           scout.intern_user_id === internUserId,
