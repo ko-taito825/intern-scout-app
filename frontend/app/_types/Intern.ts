@@ -7,7 +7,7 @@ export interface InternProfileForm {
   portfolio_url: string;
 }
 
-export interface InternProfile {
+export interface InternProfileResponse {
   id: number;
   user_id: number;
   name: string;
