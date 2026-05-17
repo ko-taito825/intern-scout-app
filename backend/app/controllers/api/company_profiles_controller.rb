@@ -3,12 +3,7 @@ class Api::CompanyProfilesController < ApplicationController
   def create
     user = User.create!(role: "company")
 
-    company_profile = user.create_company_profile!(
-      name: params[:name],
-      industry: params[:industry],
-      description: params[:description],
-      website_url: params[:website_url]
-    )
+    company_profile = user.create_company_profile!(company_profile_params)
     render json: company_profile, status: :created
   end
   def index
@@ -17,21 +12,24 @@ class Api::CompanyProfilesController < ApplicationController
   end
 
   def show
-    company_profile = CompanyProfile.find(params[:id])
-    render json: company_profile
+    render json: @company_profile
   end
 
   def update
-    company_profile = CompanyProfile.find(params[:id])
-    if company_profile.update(
-      name: params[:name],
-      industry: params[:industry],
-      description: params[:description],
-      website_url: params[:website_url]
-    )
-    render json: company_profile
+    if @company_profile.update(company_profile_params)
+    ender json: @company_profile
     else
-      render json:{ errors:company_profile.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: @company_profile.errors.full_messages }, status: :unprocessable_entity
     end
+  end
+
+  private
+
+  def set_company_profile
+    @company_profile = CompanyProfile.find(params[:id])
+  end
+
+  def company_profile_params
+    params.permit(:name, :industry, :description, :website_url)
   end
 end
