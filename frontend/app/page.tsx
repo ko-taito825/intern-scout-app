@@ -1,65 +1,66 @@
-import Image from "next/image";
+"use client";
+import Link from "next/link";
 
-export default function Home() {
+export default function Page() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-white px-6">
+      <div className="relative z-10 w-full max-w-5xl text-center">
+        <div className="mb-20">
+          <h1 className="font-bold tracking-tight">
+            <span className="bg-linear-to-r from-sky-400 to-purple-400 bg-clip-text text-transparent text-8xl sm:text-9xl">
+              merge
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="mt-4 text-3xl sm:text-4xl font-medium text-gray-700">
+            どちらで登録されますか？
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+          <Link
+            href="/interns/new"
+            className="group relative rounded-3xl border border-gray-200 bg-white p-10 text-left transition-all duration-300 hover:-translate-y-2 hover:border-sky-300 hover:shadow-[0_0_35px_rgba(56,189,248,0.1)]"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <div className="mb-6 flex h-56 items-center justify-center">
+              <img
+                src="/intern.png"
+                alt="インターン生"
+                className="max-h-full max-w-full object-contain filter drop-shadow-[0_0_15px_rgba(56,189,248,0.2)] transition-transform duration-300 group-hover:scale-105"
+              />
+            </div>
+
+            <h2 className="mb-4 text-3xl font-bold text-gray-900 transition-colors group-hover:text-sky-500">
+              インターン生として始める
+            </h2>
+
+            <p className="text-lg leading-relaxed text-gray-600">
+              自分のプロフィールを作成し、企業の募集記事を探したり、企業からのスカウトを受け取ることができます。
+            </p>
+          </Link>
+
+          <Link
+            href="/companies/new"
+            className="group relative rounded-3xl border border-gray-200 bg-white p-10 text-left transition-all duration-300 hover:-translate-y-2 hover:border-purple-300 hover:shadow-[0_0_35px_rgba(167,139,250,0.1)]"
           >
-            Documentation
-          </a>
+            <div className="mb-6 flex h-56 items-center justify-center">
+              <img
+                src="/company.png"
+                alt="企業"
+                className="max-h-full max-w-full object-contain filter drop-shadow-[0_0_15px_rgba(167,139,250,0.2)] transition-transform duration-300 group-hover:scale-105"
+              />
+            </div>
+
+            <h2 className="mb-4 text-3xl font-bold text-gray-900 transition-colors group-hover:text-purple-500">
+              企業として始める
+            </h2>
+
+            <p className="text-lg leading-relaxed text-gray-600">
+              企業のプロフィールを作成し、募集記事を投稿したり、優秀な学生を探して直接スカウトを送ることができます。
+            </p>
+          </Link>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

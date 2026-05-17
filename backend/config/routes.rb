@@ -5,7 +5,7 @@ Rails.application.routes.draw do
         get :me
       end
     end
-    resources :company_profiles, only: [ :index, :show, :create ]
+    resources :company_profiles, only: [ :index, :show, :create, :update]
     resources :scouts, only: [ :index, :create ] do
       resources :messages, only: [ :index, :create]
     end
