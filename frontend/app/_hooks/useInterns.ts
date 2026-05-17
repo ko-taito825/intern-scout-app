@@ -1,4 +1,4 @@
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import { InternProfile, InternProfileForm } from "../_types/Intern";
 import { fetcher } from "../_utils/fetcher";
 
@@ -20,11 +20,11 @@ export const useInterns = (query: string = "") => {
       body: JSON.stringify(data),
     });
     if (!res.ok) {
-      alert("登録に失敗しました");
-      return;
+      throw new Error("登録失敗");
     }
-    alert("登録できました");
     mutate();
+
+    return res.json();
   };
   return {
     interns: data,

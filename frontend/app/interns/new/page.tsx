@@ -4,6 +4,7 @@ import ProfileForm from "@/app/_components/ProfileForm";
 import { useInterns } from "@/app/_hooks/useInterns";
 import { InternProfileForm } from "@/app/_types/Intern";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function page() {
   const router = useRouter();
@@ -12,11 +13,10 @@ export default function page() {
   const handleCreate = async (data: InternProfileForm) => {
     try {
       await createIntern(data);
-      alert("登録できました");
+      toast.success("登録できました");
       router.push("/mypage");
     } catch (error) {
-      console.error(error);
-      alert("登録に失敗しました");
+      toast.error("登録に失敗しました");
     }
   };
   return (
