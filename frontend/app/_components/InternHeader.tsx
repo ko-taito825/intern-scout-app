@@ -13,6 +13,9 @@ export default function InternHeader() {
           </span>
         </Link>
         <nav className="flex items-center gap-6 text-sm font-bold text-gray-600">
+          <Link href="/jobs" className="hover:text-sky-500 transition-colors">
+            募集一覧
+          </Link>
           <Link
             href="/companies"
             className="hover:text-sky-500 transition-colors"

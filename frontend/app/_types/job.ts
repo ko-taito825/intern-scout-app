@@ -16,3 +16,10 @@ export interface JobResponse {
 export interface ApplyForm {
   message: string;
 }
+
+export interface JobProfileForm {
+  title: string;
+  content: string;
+  requirements: string;
+  work_style: string;
+}

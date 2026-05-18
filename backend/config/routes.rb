@@ -6,7 +6,7 @@ Rails.application.routes.draw do
       end
     end
     resources :company_profiles, only: [ :index, :show, :create, :update ]
-    resources :jobs, only: [ :index, :show ]
+    resources :jobs, only: [ :index, :show, :create ]
     resources :entries, only: [ :create ]
     resources :scouts, only: [ :index, :create ] do
       resources :messages, only: [ :index, :create ]
