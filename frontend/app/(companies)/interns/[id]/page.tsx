@@ -4,10 +4,11 @@ import { InternProfileResponse, MessageForm } from "@/app/_types/Intern";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function page() {
-  const paramas = useParams();
-  const id = paramas.id;
+  const params = useParams();
+  const id = params.id;
   const [intern, setIntern] = useState<InternProfileResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [messageSent, setMessageSent] = useState(false);
@@ -30,8 +31,8 @@ export default function page() {
       setIntern(data);
       fetchScoutStatus(data.user_id);
     } catch (error) {
-      console.error(error);
-      alert("インターン生詳細の取得に失敗しました");
+      console.error("Error fetching intern profile:", error);
+      toast.error("インターン生詳細の取得に失敗しました");
     } finally {
       setIsLoading(false);
     }
@@ -83,7 +84,7 @@ export default function page() {
       setMessageSent(true);
     } catch (error) {
       console.error(error);
-      alert("送信に失敗しました");
+      toast.error("送信に失敗しました");
     }
   };
   if (isLoading) {
