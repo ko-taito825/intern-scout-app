@@ -12,3 +12,7 @@ export interface JobResponse {
   updated_at: string;
   company_profile: CompanyProfileResponse;
 }
+
+export interface ApplyForm {
+  message: string;
+}
