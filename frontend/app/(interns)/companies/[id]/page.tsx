@@ -4,8 +4,10 @@ import { CompanyProfileResponse } from "@/app/_types/company";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function page() {
+  const router = useRouter();
   const params = useParams();
   const id = params.id;
   const [company, setCompany] = useState<CompanyProfileResponse | null>(null);
@@ -41,12 +43,12 @@ export default function page() {
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-10 font-sans">
       <div className="mx-auto max-w-3xl">
-        <Link
-          href="/companies"
+        <button
+          onClick={() => router.back()}
           className="mb-6 inline-flex items-center text-sm font-medium text-gray-600 hover:text-black transition"
         >
-          ← 企業一覧に戻る
-        </Link>
+          ← 募集詳細に戻る
+        </button>
 
         <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
           <div className="border-b border-gray-100 pb-6">
