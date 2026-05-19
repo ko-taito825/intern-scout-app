@@ -5,7 +5,7 @@ class Api::EntriesController < ApplicationController
     if entry.save
       render json: entry, status: :created
     else
-      render json: { errors: entry.errors.full_messages }, status: :unprocessable_entity
+      render json: { error: "応募に失敗しました", messages: entry.errors.full_messages }, status: :unprocessable_entity
     end
   end
 
@@ -14,5 +14,4 @@ class Api::EntriesController < ApplicationController
   def entry_params
     params.permit(:job_id, :user_id, :message)
   end
-  
 end

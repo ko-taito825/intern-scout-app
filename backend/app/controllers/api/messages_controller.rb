@@ -1,14 +1,32 @@
 class Api::MessagesController < ApplicationController
+  before_action :set_scout
   def index
-    scout = Scout.find(params[:scout_id])
-    
     messages = scout.messages
     render json: messages
   end
 
   def create
-    scout = Scout.find(params[:scout_id])    
-    message = scout.messages.create!(body:params[:body])
-    render json: message, status: :created
+    message = scout.messages.build(body: params[:body])
+
+    if message.save
+      render json: message, status: :created
+    else
+      render json: { 
+        error: "メッセージの送信に失敗しました", 
+        messages: message.errors.full_messages 
+      }, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def set_scout
+    @scout = Scout.find(params[:scout_id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "指定されたやり取りが見つかりません" }, status: :not_found
+  end
+
+  def message_params
+    params.permit(:body)
   end
 end
