@@ -23,3 +23,14 @@ export interface JobProfileForm {
   requirements: string;
   work_style: string;
 }
+
+export interface JobPosting {
+  id: number;
+  title: string;
+  content: string;
+  work_style: string;
+  company_profile: {
+    id: number;
+    name: string;
+  };
+}

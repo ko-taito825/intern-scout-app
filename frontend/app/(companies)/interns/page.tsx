@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { InternProfileResponse } from "../../_types/Intern";
+import { toast } from "sonner";
 
 export default function page() {
   const [interns, setInterns] = useState<InternProfileResponse[]>([]);
@@ -17,9 +18,10 @@ export default function page() {
       }
       const data: InternProfileResponse[] = await res.json();
       setInterns(data);
+      toast.success("インターン生一覧を取得しました");
     } catch (error) {
       console.error(error);
-      alert("インターン生一覧の取得に失敗しました");
+      toast.error("インターン生一覧の取得に失敗しました");
     } finally {
       setIsLoading(false);
     }
@@ -29,14 +31,18 @@ export default function page() {
       const res = await fetch(
         "http://localhost:3001/api/scouts?company_user_id=1",
       );
-      if (!res.ok) throw new Error("スカウト一覧の取得に失敗しました");
+      if (!res.ok) {
+        throw new Error("スカウト一覧の取得に失敗しました");
+      }
       const data = await res.json();
       const ids = data.map(
         (scout: { intern_user_id: number }) => scout.intern_user_id,
       );
       setScoutedInternUserIds(ids);
+      toast.success("スカウト一覧を取得しました");
     } catch (error) {
       console.error(error);
+      toast.error("スカウト一覧の取得に失敗しました");
     }
   };
 

@@ -30,6 +30,7 @@ export default function page() {
       const data: InternProfileResponse = await res.json();
       setIntern(data);
       fetchScoutStatus(data.user_id);
+      toast.success("インターン生の詳細を取得しました");
     } catch (error) {
       console.error("Error fetching intern profile:", error);
       toast.error("インターン生詳細の取得に失敗しました");
@@ -48,15 +49,15 @@ export default function page() {
       );
       if (!res.ok) return;
       const data = await res.json();
-      console.log("チェック対象のインターン生ID:", internUserId);
-      console.log("バックエンドから取得したスカウト一覧:", data);
       const scouted = data.some(
         (scout: { intern_user_id: number }) =>
           scout.intern_user_id === internUserId,
       );
       setIsScouted(scouted);
+      toast.success("スカウト状況を取得しました");
     } catch (error) {
       console.error(error);
+      toast.error("スカウト状況の取得に失敗しました");
     }
   };
   const onSubmit = async (data: MessageForm) => {
@@ -69,7 +70,9 @@ export default function page() {
           intern_user_id: intern?.user_id,
         }),
       });
-      if (!scoutRes.ok) throw new Error("スカウト作成に失敗しました");
+      if (!scoutRes.ok) {
+        throw new Error("スカウト作成に失敗しました");
+      }
       const scout = await scoutRes.json();
 
       const messageRes = await fetch(
@@ -80,7 +83,9 @@ export default function page() {
           body: JSON.stringify({ body: data.body }),
         },
       );
-      if (!messageRes.ok) throw new Error("メッセージの送信に失敗しました。");
+      if (!messageRes.ok) {
+        throw new Error("メッセージの送信に失敗しました。");
+      }
       setMessageSent(true);
     } catch (error) {
       console.error(error);

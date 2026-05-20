@@ -1,32 +1,37 @@
 import Link from "next/link";
 
-export default function CompanyHeader() {
+export default function CompanyLayout() {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 px-6 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between">
-        <Link
-          href="/companies/mypage"
-          className="text-2xl font-extrabold tracking-tight transition-transform hover:scale-105"
-        >
-          <span className="bg-linear-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
-            merge
-          </span>
-        </Link>
-        <nav className="flex items-center gap-6 text-sm font-bold text-gray-600">
-          <Link
-            href="/interns"
-            className="hover:text-purple-500 transition-colors"
-          >
-            学生を探す
-          </Link>
-          <Link
-            href="/companies/mypage"
-            className="hover:text-purple-500 transition-colors"
-          >
-            マイページ
-          </Link>
-        </nav>
-      </div>
-    </header>
+    <>
+      <header className="border-b border-gray-100 bg-white">
+        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-6">
+          <div className="text-xl font-bold text-purple-600">
+            <Link href="/">merge</Link>
+          </div>
+
+          <nav className="flex items-center space-x-6 gap-6">
+            <Link
+              href="/interns" // ※URLは実際の「学生を探す」ページに合わせてください
+              className="text-sm font-medium text-gray-600 transition-colors hover:text-purple-600"
+            >
+              学生を探す
+            </Link>
+
+            <Link
+              href="/my-jobs"
+              className="text-sm font-medium text-gray-600 transition-colors hover:text-purple-600"
+            >
+              募集一覧・編集
+            </Link>
+            <Link
+              href="/companies/mypage"
+              className="text-sm font-medium text-gray-600 transition-colors hover:text-purple-600"
+            >
+              マイページ
+            </Link>
+          </nav>
+        </div>
+      </header>
+    </>
   );
 }

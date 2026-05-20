@@ -128,9 +128,12 @@ export default function page() {
                         {new Date(scout.created_at).toLocaleDateString("ja-JP")}
                       </p>
                     </div>
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-50 transition group-hover:bg-black group-hover:text-white">
+                    <Link
+                      href={`/interns/${scout.id}`}
+                      className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-50 transition group-hover:bg-black group-hover:text-white"
+                    >
                       →
-                    </div>
+                    </Link>
                   </div>
                 </div>
               ))

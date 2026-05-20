@@ -28,7 +28,7 @@ class Api::ScoutsController < ApplicationController
   end
 
   def sent
-    scouts = Scout.includes(:intern_profile).where(company_user_id: 1).order(created_at: :desc)
+    scouts = Scout.includes(intern_user: :intern_profile).where(company_user_id: 1).order(created_at: :desc)
     result = scouts.map do |scout|
       {
         id: scout.id,
