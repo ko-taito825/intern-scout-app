@@ -23,9 +23,9 @@ class Api::InternProfilesController < ApplicationController
   end
 
   def create
-    user = User.create!(role: "intern")
+    user = User.create(role: "intern")
 
-    intern_profile = user.create_intern_profile!(
+    intern_profile = user.build_intern_profile(
       name: params[:name],
       university: params[:university],
       grade: params[:grade],
@@ -33,30 +33,33 @@ class Api::InternProfilesController < ApplicationController
       github_url: params[:github_url],
       portfolio_url: params[:portfolio_url]
     )
-    render json: intern_profile, status: :created
+    if intern_profile.save
+      render json: intern_profile, status: :created
+    else
+      render json: { error: "インターン生の登録に失敗しました", messages: intern_profile.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+  def update
+        # ログイン中（と仮定している）ユーザーのプロフィールを探す
+        profile = InternProfile.find_by(user_id: 2)
+        if profile.update(intern_profile_params)
+          render json: profile
+        else
+          render json: { error: "プロフィールの更新に失敗しました", messages: profile.errors.full_messages }, status: :unprocessable_entity
+        end
   end
 
   def me
     #簡易ログイン中のインターン生(id:2)のプロフィールを探す
-    profile = InternProfile.find_by(user_id:2)
+    profile = InternProfile.find_by(user_id: 2)
 
     if profile
-      render json: profile
+        render json: profile
     else
-      render json: {error:"プロフィール未登録です"}, status: :not_found 
+        render json: { error: "プロフィール未登録です" }, status: :not_found 
     end
   end
 
-  def update
-      # ログイン中（と仮定している）ユーザーのプロフィールを探す
-    profile = InternProfile.find_by(user_id: 2)
-    if profile.update(intern_profile_params)
-      render json: profile
-    else
-      render json: profile.error, status: :unprocessable_entity
-    end
-    
-  end
   private
 
     def intern_profile_params

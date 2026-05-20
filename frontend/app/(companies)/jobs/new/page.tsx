@@ -15,7 +15,10 @@ export default function page() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          company_profile_id: 1, // 🚧 ログイン機能ができるまでは、とりあえず「1番の企業」として保存する
+        }),
       });
       if (!res.ok) {
         throw new Error(`登録に失敗しました: ${res.status}`);

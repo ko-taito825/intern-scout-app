@@ -6,13 +6,14 @@ Rails.application.routes.draw do
       end
     end
     resources :company_profiles, only: [ :index, :show, :create, :update ]
-    resources :jobs, only: [ :index, :show, :create ]
+    resources :jobs, only: [ :index, :show, :create, :update ]
     resources :entries, only: [ :create ]
     resources :scouts, only: [ :index, :create ] do
+      collection do
+        get :sent
+      end
       resources :messages, only: [ :index, :create ]
     end
   end
-  
   get "up" => "rails/health#show", as: :rails_health_check
-
 end

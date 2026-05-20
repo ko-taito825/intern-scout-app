@@ -1,36 +1,40 @@
 "use client";
 
-import ProfileForm from "@/app/_components/ProfileForm";
-import { InternProfileForm } from "@/app/_types/Intern";
+import JobForm from "@/app/_components/JobForm";
+import { JobProfileForm } from "@/app/_types/job";
+import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
 export default function page() {
+  const params = useParams();
+  const id = params.id;
   const router = useRouter();
-  const [profile, setProfile] = useState<InternProfileForm | null>(null);
+  const [profile, setProfile] = useState<JobProfileForm | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("http://localhost:3001/api/intern_profiles/me");
+        const res = await fetch(`http://localhost:3001/api/jobs/${id}`);
         if (!res.ok) {
-          throw new Error("プロフィールの取得に失敗しました");
+          throw new Error("募集詳細の取得に失敗しました");
         }
         const profileData = await res.json();
         setProfile(profileData);
       } catch (error) {
         console.error("データの取得に失敗しました", error);
         toast.error(
-          "プロフィールの取得に失敗しました。画面をリロードしてください。",
+          "募集詳細の取得に失敗しました。画面をリロードしてください。",
         );
       }
     };
     fetchProfile();
   }, []);
 
-  const handleUpdate = async (data: InternProfileForm) => {
+  const handleUpdate = async (data: JobProfileForm) => {
     try {
-      const res = await fetch("http://localhost:3001/api/intern_profiles/2", {
+      const res = await fetch(`http://localhost:3001/api/jobs/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -40,8 +44,8 @@ export default function page() {
       if (!res.ok) {
         throw new Error("更新に失敗しました");
       }
-      toast.success("プロフィールを更新しました！");
-      router.push("/mypage");
+      toast.success("募集を更新できました");
+      router.push(`/jobs/${id}`);
     } catch (error) {
       console.error(error);
       toast.error("通信エラーが発生しました");
@@ -53,12 +57,11 @@ export default function page() {
       <main className="min-h-screen bg-gray-50 px-6 py-12">
         <div className="mx-auto max-w-xl rounded-2xl bg-white p-8 shadow-sm">
           <h1 className="mb-2 text-2xl font-bold text-gray-900">
-            インターン生登録（編集）
+            募集内容の編集
           </h1>
-          <p className="mb-6 text-gray-600">
-            プロフィール情報を編集してください
-          </p>
-          <ProfileForm
+          <p className="mb-6 text-gray-600">募集情報を編集してください。</p>
+
+          <JobForm
             onSubmit={handleUpdate}
             buttonText="更新する"
             defaultValues={profile}
