@@ -1,23 +1,10 @@
 class Api::ScoutsController < ApplicationController
-  def create
-    scout = Scout.new(
-      company_user_id: params[:company_user_id],
-      intern_user_id: params[:intern_user_id],
-      status: "pending"
-    )
-    if scout.save
-       render json: scout, status: :created
-    else
-      render json: { error: "すでにスカウト済みです" }, status: :unprocessable_entity
-    end
-  end
-
   def index
     current_intern_user_id = 2
 
-    scout = Scout.includes(company_user: :company_profile, messages: []).where(intern_user_id: current_intern_user_id)
+    scouts = Scout.includes(company_user: :company_profile, messages: []).where(intern_user_id: current_intern_user_id)
 
-    result = scout.map do |scout|
+    result = scouts.map do |scout|
       {
         id: scout.id,
         status: scout.status,
@@ -28,6 +15,16 @@ class Api::ScoutsController < ApplicationController
       }
     end
     render json: result
+  end
+
+  def create
+    scout = Scout.new(scout_params)
+    scout.status = "pending"
+    if scout.save
+       render json: scout, status: :created
+    else
+      render json: { error: "すでにスカウト済みです", messages: scout.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   def sent
@@ -41,5 +38,9 @@ class Api::ScoutsController < ApplicationController
       }
     end
     render json: result
+  end
+  private
+  def scout_params
+    params.permit(:company_user_id, :intern_user_id)
   end
 end
