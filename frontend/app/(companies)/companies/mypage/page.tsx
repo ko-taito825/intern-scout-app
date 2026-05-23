@@ -165,6 +165,7 @@ export default function page() {
             )}
           </div>
         </section>
+
         <section className="mx-auto max-w-4xl px-6 py-12">
           <div className="mb-8 flex items-center justify-between">
             <h2 className="text-2xl font-bold text-zinc-900">
@@ -185,9 +186,10 @@ export default function page() {
               </p>
             ) : (
               scouts.map((scout) => (
-                <div
+                <Link
+                  href={`/companies/chat/${scout.id}`}
                   key={scout.id}
-                  className="group block cursor-pointer rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200 transition hover:ring-black"
+                  className="group block cursor-pointer rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200 transition hover:ring-purple-500"
                 >
                   <div className="flex items-start justify-between">
                     <div>
@@ -201,14 +203,11 @@ export default function page() {
                         {new Date(scout.created_at).toLocaleDateString("ja-JP")}
                       </p>
                     </div>
-                    <Link
-                      href={`/interns/${scout.intern_profile_id}`}
-                      className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-50 transition group-hover:bg-black group-hover:text-white"
-                    >
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-50 transition group-hover:bg-purple-600 group-hover:text-white">
                       →
-                    </Link>
+                    </div>
                   </div>
-                </div>
+                </Link>
               ))
             )}
           </div>

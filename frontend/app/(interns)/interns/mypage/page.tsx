@@ -111,7 +111,8 @@ export default function page() {
 
           <div className="grid gap-4">
             {scouts.map((scout) => (
-              <div
+              <Link
+                href={`/interns/chat/${scout.id}`}
                 key={scout.id}
                 className="group block cursor-pointer rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200 transition hover:ring-black"
               >
@@ -131,7 +132,7 @@ export default function page() {
                     →
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>

@@ -1,12 +1,13 @@
 class Api::MessagesController < ApplicationController
   before_action :set_scout
   def index
-    messages = @scout.messages
+    messages = @scout.messages.order(created_at: :asc)
     render json: messages
   end
 
   def create
-    message = @scout.messages.build(body: params[:body])
+    is_company =  CompanyProfile.exists?(user_id: current_user_id)
+    message = @scout.messages.build(body: params[:body], is_from_company: is_company)
 
     if message.save
       render json: message, status: :created
