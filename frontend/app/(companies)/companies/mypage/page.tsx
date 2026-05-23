@@ -2,36 +2,48 @@
 import Link from "next/link";
 import { CompanyProfileResponse, SentScoutItem } from "@/app/_types/company";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function page() {
+  const router = useRouter();
   const [profile, setProfile] = useState<CompanyProfileResponse | null>(null);
   const [scouts, setScouts] = useState<SentScoutItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchData = async () => {
-    try {
-      const [profileRes, scoutRes] = await Promise.all([
-        fetch("http://localhost:3001/api/company_profiles/1"),
-        fetch("http://localhost:3001/api/scouts/sent"),
-      ]);
-      if (profileRes.ok) {
-        const profileData = await profileRes.json();
-        setProfile(profileData);
-        console.log("企業プロフィールデータ", profileData);
-      }
-      if (scoutRes.ok) {
-        const scoutData = await scoutRes.json();
-        setScouts(scoutData);
-        console.log("送信済みスカウトデータ", scoutData);
-      }
-    } catch (error) {
-      console.error("データの取得に失敗しました", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      const userId = localStorage.getItem("current_user_id");
+      if (!userId) {
+        router.push("/companies/new");
+        return;
+      }
+      try {
+        const authHeaders = {
+          "Content-Type": "application/json",
+          "X-User-Id": userId,
+        };
+        const [profileRes, scoutRes] = await Promise.all([
+          fetch("http://localhost:3001/api/company_profiles/me", {
+            headers: authHeaders,
+          }),
+          fetch("http://localhost:3001/api/scouts/sent", {
+            headers: authHeaders,
+          }),
+        ]);
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          setProfile(profileData);
+        }
+        if (scoutRes.ok) {
+          const scoutData = await scoutRes.json();
+          setScouts(scoutData);
+        }
+      } catch (error) {
+        console.error("データの取得に失敗しました", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchData();
   }, []);
 
@@ -129,7 +141,7 @@ export default function page() {
                       </p>
                     </div>
                     <Link
-                      href={`/interns/${scout.id}`}
+                      href={`/interns/${scout.intern_profile_id}`}
                       className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-50 transition group-hover:bg-black group-hover:text-white"
                     >
                       →

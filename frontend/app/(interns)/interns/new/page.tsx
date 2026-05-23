@@ -1,34 +1,41 @@
 "use client";
 
 import ProfileForm from "@/app/_components/ProfileForm";
-
 import { InternProfileForm } from "@/app/_types/Intern";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function page() {
   const router = useRouter();
 
+  useEffect(() => {
+    const userId = localStorage.getItem("current_user_id");
+    const role = localStorage.getItem("current_role");
+    if (userId && role === "intern") {
+      router.push("/interns/mypage");
+    }
+  }, [router]);
   const handleCreate = async (data: InternProfileForm) => {
-    const payload = {
-      ...data,
-      user_id: 2,
-    };
     try {
       const res = await fetch("http://localhost:3001/api/intern_profiles", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        //一旦id=2
-        body: JSON.stringify(payload),
+
+        body: JSON.stringify(data),
       });
       if (!res.ok) {
         throw new Error(`登録に失敗しました: ${res.status}`);
       }
-
+      const newProfile = await res.json();
+      if (newProfile && newProfile.user_id) {
+        localStorage.setItem("current_user_id", String(newProfile.user_id));
+        localStorage.setItem("current_role", "intern");
+      }
       toast.success("登録できました");
-      router.push("/mypage");
+      router.push("/interns/mypage");
     } catch (error) {
       console.error(error);
 

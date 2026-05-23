@@ -9,22 +9,26 @@ export default function page() {
   const router = useRouter();
 
   const handleCreate = async (data: JobProfileForm) => {
+    const userId = localStorage.getItem("current_user_id");
+    if (!userId) {
+      toast.error("企業として、ログインしてください");
+      router.push("/companies/new");
+      return;
+    }
     try {
       const res = await fetch("http://localhost:3001/api/jobs", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-User-Id": userId,
         },
-        body: JSON.stringify({
-          ...data,
-          company_profile_id: 1, // 🚧 ログイン機能ができるまでは、とりあえず「1番の企業」として保存する
-        }),
+        body: JSON.stringify(data),
       });
       if (!res.ok) {
         throw new Error(`登録に失敗しました: ${res.status}`);
       }
       toast.success("登録できました");
-      router.push("/jobs");
+      router.push("/my-jobs");
     } catch (error) {
       console.error(error);
       toast.error("登録に失敗しました");

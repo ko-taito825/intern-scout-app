@@ -1,9 +1,7 @@
 class Api::InternProfilesController < ApplicationController
   def index
     intern_profiles = InternProfile.all
-    # 後で簡易ログイン実装時に動的なIDに変更する
-    current_company_user_id = 1
-    scouted_intern_user_ids = Scout.where(company_user_id: current_company_user_id).pluck(:intern_user_id)
+    scouted_intern_user_ids = Scout.where(company_user_id: current_user_id).pluck(:intern_user_id)
 
     result = intern_profiles.map do |profile|
       profile.as_json.merge(scouted: scouted_intern_user_ids.include?(profile.user_id))
@@ -13,13 +11,13 @@ class Api::InternProfilesController < ApplicationController
 
   def show
     intern_profile = InternProfile.find(params[:id])
-    # 後で簡易ログイン実装時に動的なIDに変更する
-    current_company_user_id = 1
     is_scouted = Scout.exists?(
-      company_user_id: current_company_user_id,
+      company_user_id: current_user_id,
       intern_user_id: intern_profile.user_id
     )
     render json: intern_profile.as_json.merge(scouted: is_scouted)
+  rescue ActiveRecord::RecordNotFound
+      render json: { error: "インターン生が見つかりません" }, status: :not_found
   end
 
   def create
@@ -40,8 +38,7 @@ class Api::InternProfilesController < ApplicationController
     end
   end
   def update
-        # ログイン中（と仮定している）ユーザーのプロフィールを探す
-        profile = InternProfile.find_by(user_id: 2)
+        profile = InternProfile.find_by(user_id: current_user_id)
         if profile.update(intern_profile_params)
           render json: profile
         else
@@ -50,13 +47,11 @@ class Api::InternProfilesController < ApplicationController
   end
 
   def me
-    #簡易ログイン中のインターン生(id:2)のプロフィールを探す
-    profile = InternProfile.find_by(user_id: 2)
-
+    profile = InternProfile.find_by(user_id: current_user_id)
     if profile
         render json: profile
     else
-        render json: { error: "プロフィール未登録です" }, status: :not_found 
+        render json: { error: "プロフィール未登録です" }, status: :not_found
     end
   end
 

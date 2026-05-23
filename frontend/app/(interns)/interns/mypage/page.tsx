@@ -2,34 +2,47 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { InternProfileResponse, ScoutInboxItem } from "../../../_types/Intern";
+import { useRouter } from "next/navigation";
 export default function page() {
+  const router = useRouter();
   const [profile, setProfile] = useState<InternProfileResponse | null>(null);
   const [scouts, setScouts] = useState<ScoutInboxItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchData = async () => {
-    try {
-      const [profileRes, scoutRes] = await Promise.all([
-        fetch("http://localhost:3001/api/intern_profiles/2"),
-        fetch("http://localhost:3001/api/scouts"),
-      ]);
-      if (profileRes.ok) {
-        const profileData = await profileRes.json();
-        setProfile(profileData);
-        console.log("プロフィールデータ", profileData);
-      }
-      if (scoutRes.ok) {
-        const scoutData = await scoutRes.json();
-        setScouts(scoutData);
-        console.log("スカウトデータ", scoutData);
-      }
-    } catch (error) {
-      console.error("データの取得に失敗しました", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   useEffect(() => {
+    const fetchData = async () => {
+      const userId = localStorage.getItem("current_user_id");
+      if (!userId) {
+        router.push("/interns/new");
+        return;
+      }
+      try {
+        const authHeaders = {
+          "Content-Type": "application/json",
+          "X-User-Id": userId,
+        };
+        const [profileRes, scoutRes] = await Promise.all([
+          fetch("http://localhost:3001/api/intern_profiles/me", {
+            headers: authHeaders,
+          }),
+          fetch("http://localhost:3001/api/scouts", {
+            headers: authHeaders,
+          }),
+        ]);
+        if (profileRes.ok) {
+          const profileData = await profileRes.json();
+          setProfile(profileData);
+        }
+        if (scoutRes.ok) {
+          const scoutData = await scoutRes.json();
+          setScouts(scoutData);
+        }
+      } catch (error) {
+        console.error("データの取得に失敗しました", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     fetchData();
   }, []);
 

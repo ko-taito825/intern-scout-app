@@ -1,6 +1,6 @@
 "use client";
 
-import CompanyFrom from "@/app/_components/CompanyFrom";
+import CompanyFrom from "@/app/_components/CompanyForm";
 import { CompanyProfileFrom } from "@/app/_types/company";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

@@ -1,8 +1,6 @@
 class Api::ScoutsController < ApplicationController
   def index
-    current_intern_user_id = 2
-
-    scouts = Scout.includes(company_user: :company_profile, messages: []).where(intern_user_id: current_intern_user_id)
+    scouts = Scout.includes(company_user: :company_profile, messages: []).where(intern_user_id: current_user_id)
 
     result = scouts.map do |scout|
       {
@@ -28,10 +26,11 @@ class Api::ScoutsController < ApplicationController
   end
 
   def sent
-    scouts = Scout.includes(intern_user: :intern_profile).where(company_user_id: 1).order(created_at: :desc)
+    scouts = Scout.includes(intern_user: :intern_profile).where(company_user_id: current_user_id).order(created_at: :desc)
     result = scouts.map do |scout|
       {
         id: scout.id,
+        intern_user_id: scout.intern_user&.intern_profile&.id,
         status: scout.status,
         created_at: scout.created_at,
         intern_name: scout.intern_user&.intern_profile&.name || "名前未設定",

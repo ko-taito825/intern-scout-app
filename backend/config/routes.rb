@@ -5,7 +5,11 @@ Rails.application.routes.draw do
         get :me
       end
     end
-    resources :company_profiles, only: [ :index, :show, :create, :update ]
+    resources :company_profiles, only: [ :index, :show, :create, :update ] do
+      collection do
+        get :me
+      end
+    end
     resources :jobs, only: [ :index, :show, :create, :update ]
     resources :entries, only: [ :create ]
     resources :scouts, only: [ :index, :create ] do
