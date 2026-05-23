@@ -117,9 +117,11 @@ export default function page() {
                           isMe ? "text-sky-100" : "text-purple-200"
                         }`}
                       >
-                        {new Date(msg.created_at).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
+                        {new Date(msg.created_at).toLocaleTimeString("ja-JP", {
+                          month: "numeric",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
                         })}
                       </p>
                     </div>

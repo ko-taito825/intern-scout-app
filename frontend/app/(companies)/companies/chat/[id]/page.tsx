@@ -103,8 +103,8 @@ export default function page() {
                     <div
                       className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
                         isMe
-                          ? "bg-sky-500 text-white rounded-br-none"
-                          : "bg-purple-500 text-white rounded-bl-none"
+                          ? "bg-purple-500 text-white rounded-br-none"
+                          : "bg-sky-500 text-white rounded-bl-none"
                       }`}
                     >
                       <p className="whitespace-pre-wrap wrap-break-word">
@@ -115,7 +115,9 @@ export default function page() {
                           isMe ? "text-sky-100" : "text-purple-200"
                         }`}
                       >
-                        {new Date(msg.created_at).toLocaleTimeString([], {
+                        {new Date(msg.created_at).toLocaleTimeString("ja-JP", {
+                          month: "numeric",
+                          day: "numeric",
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
@@ -138,12 +140,12 @@ export default function page() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 placeholder="メッセージを入力..."
-                className="flex-1 rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                className="flex-1 rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
               />
               <button
                 type="submit"
                 disabled={!inputMessage.trim() || isSending}
-                className="rounded-xl bg-sky-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-xl bg-purple-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 送信
               </button>
