@@ -1,12 +1,12 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { CompanyProfileFrom } from "../_types/company";
+import { CompanyProfileForm } from "../_types/company";
 
 type Props = {
-  onSubmit: (data: CompanyProfileFrom) => Promise<void>;
+  onSubmit: (data: CompanyProfileForm) => Promise<void>;
   buttonText: string;
-  defaultValues?: CompanyProfileFrom | null;
+  defaultValues?: CompanyProfileForm | null;
 };
 
 export default function CompanyFrom({
@@ -18,7 +18,7 @@ export default function CompanyFrom({
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<CompanyProfileFrom>({
+  } = useForm<CompanyProfileForm>({
     values: defaultValues || undefined,
   });
 
