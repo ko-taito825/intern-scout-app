@@ -11,9 +11,9 @@ class Api::MessagesController < ApplicationController
     if message.save
       render json: message, status: :created
     else
-      render json: { 
-        error: "メッセージの送信に失敗しました", 
-        messages: message.errors.full_messages 
+      render json: {
+        error: "メッセージの送信に失敗しました",
+        messages: message.errors.full_messages
       }, status: :unprocessable_entity
     end
   end

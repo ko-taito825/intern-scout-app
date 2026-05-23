@@ -1,14 +1,21 @@
 "use client";
 
-import CompanyFrom from "@/app/_components/CompanyFrom";
-import { CompanyProfileFrom } from "@/app/_types/company";
+import CompanyFrom from "@/app/_components/CompanyForm";
+import { CompanyProfileForm } from "@/app/_types/company";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function page() {
   const router = useRouter();
-
-  const handleCreate = async (data: CompanyProfileFrom) => {
+  useEffect(() => {
+    const userId = localStorage.getItem("current_user_id");
+    const role = localStorage.getItem("current_role");
+    if (userId && role === "company") {
+      router.push("/companies/mypage");
+    }
+  }, [router]);
+  const handleCreate = async (data: CompanyProfileForm) => {
     try {
       const res = await fetch("http://localhost:3001/api/company_profiles", {
         method: "POST",
@@ -20,10 +27,13 @@ export default function page() {
       if (!res.ok) {
         throw new Error(`登録に失敗しました: ${res.status}`);
       }
-
+      const newProfile = await res.json();
+      if (newProfile && newProfile.user_id) {
+        localStorage.setItem("current_user_id", String(newProfile.user_id));
+        localStorage.setItem("current_role", "company");
+      }
       toast.success("登録できました");
-
-      router.push("/mypage");
+      router.push("/companies/mypage");
     } catch (error) {
       console.error(error);
 

@@ -10,15 +10,19 @@ export default function page() {
 
   useEffect(() => {
     const fetchJobs = async () => {
+      const userId = localStorage.getItem("current_user_id");
       try {
-        const res = await fetch("http://localhost:3001/api/jobs");
+        const res = await fetch("http://localhost:3001/api/jobs", {
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId || "",
+          },
+        });
         if (!res.ok) {
           throw new Error("API通信に失敗しました");
         }
         const data: JobPosting[] = await res.json();
-        //仮のidでフィルタリング。後で認証機能実装後に修正予定
-        const myJobs = data.filter((job) => job.company_profile?.id === 1);
-        setJobs(myJobs);
+        setJobs(data);
         toast.success("募集一覧を取得しました");
       } catch (error) {
         console.error(error);
@@ -49,7 +53,7 @@ export default function page() {
           </div>
 
           <Link
-            href="/jobs/new"
+            href="/my-jobs/new"
             className="rounded-xl bg-purple-600 px-5 py-3 text-sm font-bold text-purple-100 shadow-sm transition-all hover:bg-purple-700 hover:shadow"
           >
             ＋ 新しく募集要項を作成
@@ -62,7 +66,7 @@ export default function page() {
               現在、作成された募集要項はありません。
             </p>
             <Link
-              href="/jobs/new"
+              href="/my-jobs/new"
               className="mt-4 inline-block text-sm font-bold text-purple-600 hover:underline"
             >
               最初の募集要項を作成してみる
@@ -89,14 +93,14 @@ export default function page() {
 
                 <div className="mt-4 flex items-center gap-3 sm:mt-0">
                   <Link
-                    href={`/jobs/${job.id}`}
+                    href={`/my-jobs/${job.id}`}
                     className="rounded-xl bg-gray-50 px-4 py-2.5 text-sm font-bold text-gray-600 transition hover:bg-gray-100"
                   >
-                    詳細を見る
+                    プレビュー
                   </Link>
 
                   <Link
-                    href={`/jobs/${job.id}/edit`}
+                    href={`/my-jobs/${job.id}/edit`}
                     className="rounded-xl bg-purple-50 px-4 py-2.5 text-sm font-bold text-purple-700 transition hover:bg-purple-100"
                   >
                     編集する

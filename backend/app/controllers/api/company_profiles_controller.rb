@@ -21,10 +21,20 @@ class Api::CompanyProfilesController < ApplicationController
   end
 
   def update
-    if @company_profile.update(company_profile_params)
-      render json: @company_profile
+    company_profile = CompanyProfile.find_by(user_id: current_user_id)
+    if company_profile && company_profile.update(company_profile_params)
+      render json: company_profile
     else
-      render json: { error: "企業情報の更新に失敗しました", messages: @company_profile.errors.full_messages }, status: :unprocessable_entity
+      render json: { error: "企業情報の更新に失敗しました", messages:   company_profile.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def me
+    company_profile = CompanyProfile.find_by(user_id: current_user_id)
+    if company_profile
+      render json: company_profile
+    else
+      render json: { error: "企業情報が見つかりません" }, status: :not_found
     end
   end
 

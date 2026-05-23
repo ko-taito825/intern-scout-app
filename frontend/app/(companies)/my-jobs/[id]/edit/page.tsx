@@ -33,11 +33,19 @@ export default function page() {
   }, []);
 
   const handleUpdate = async (data: JobProfileForm) => {
+    const userId = localStorage.getItem("current_user_id");
+    if (!userId) {
+      toast.error(
+        "ログイン状態が確認できません、再度企業としてログインしてください",
+      );
+      return;
+    }
     try {
       const res = await fetch(`http://localhost:3001/api/jobs/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          "X-User-Id": userId,
         },
         body: JSON.stringify(data),
       });
@@ -45,7 +53,7 @@ export default function page() {
         throw new Error("更新に失敗しました");
       }
       toast.success("募集を更新できました");
-      router.push(`/jobs/${id}`);
+      router.push("/my-jobs");
     } catch (error) {
       console.error(error);
       toast.error("通信エラーが発生しました");

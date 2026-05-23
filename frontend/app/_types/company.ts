@@ -1,8 +1,8 @@
-export interface CompanyProfileFrom {
+export interface CompanyProfileForm {
   name: string;
   industry: string;
   description: string;
-  website_url: String;
+  website_url: string;
 }
 
 export interface CompanyProfileResponse {
@@ -18,6 +18,7 @@ export interface CompanyProfileResponse {
 
 export interface SentScoutItem {
   id: number;
+  intern_profile_id: number;
   status: string;
   intern_name: string;
   latest_message: string;
