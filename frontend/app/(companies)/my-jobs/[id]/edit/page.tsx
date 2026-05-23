@@ -14,6 +14,12 @@ export default function page() {
   const [profile, setProfile] = useState<JobProfileForm | null>(null);
 
   useEffect(() => {
+    const userId = localStorage.getItem("current_user_id");
+    if (!userId) {
+      toast.error("ログイン状態が確認できません");
+      router.push("/companies/new");
+      return;
+    }
     const fetchProfile = async () => {
       try {
         const res = await fetch(`http://localhost:3001/api/jobs/${id}`);
@@ -60,6 +66,36 @@ export default function page() {
     }
   };
 
+  const handleDelete = async () => {
+    const isConfirmed = window.confirm(
+      "本当にこの募集を削除しますか？\n※この操作は取り消せません。",
+    );
+    if (!isConfirmed) return;
+    const userId = localStorage.getItem("current_user_id");
+    if (!userId) {
+      toast.error("ログイン状態が確認できません");
+      router.push("/companies/new");
+      return;
+    }
+    try {
+      const res = await fetch(`http://localhost:3001/api/jobs/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Id": userId,
+        },
+      });
+      if (!res.ok) {
+        throw new Error("削除に失敗しました");
+      }
+      toast.success("募集を削除できました");
+      router.push("/my-jobs");
+    } catch (error) {
+      console.error(error);
+      toast.error("通信エラーが発生しました");
+    }
+  };
+
   return (
     <>
       <main className="min-h-screen bg-gray-50 px-6 py-12">
@@ -73,6 +109,7 @@ export default function page() {
             onSubmit={handleUpdate}
             buttonText="更新する"
             defaultValues={profile}
+            onDelete={handleDelete}
           />
         </div>
       </main>

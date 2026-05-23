@@ -7,12 +7,14 @@ type Props = {
   onSubmit: (data: JobProfileForm) => Promise<void>;
   buttonText: string;
   defaultValues?: JobProfileForm | null;
+  onDelete?: () => Promise<void>;
 };
 
 export default function JobForm({
   onSubmit,
   buttonText,
   defaultValues,
+  onDelete,
 }: Props) {
   const {
     register,
@@ -75,6 +77,15 @@ export default function JobForm({
       >
         {isSubmitting ? "送信中..." : buttonText}
       </button>
+      {onDelete && (
+        <button
+          type="button"
+          onClick={onDelete}
+          className="w-full rounded-lg border border-red-500 px-4 py-3 font-bold text-red-500 transition-all hover:bg-red-50"
+        >
+          この募集を削除する
+        </button>
+      )}
     </form>
   );
 }
