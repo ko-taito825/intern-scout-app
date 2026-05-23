@@ -1,12 +1,12 @@
 class Api::MessagesController < ApplicationController
   before_action :set_scout
   def index
-    messages = scout.messages
+    messages = @scout.messages
     render json: messages
   end
 
   def create
-    message = scout.messages.build(body: params[:body])
+    message = @scout.messages.build(body: params[:body])
 
     if message.save
       render json: message, status: :created

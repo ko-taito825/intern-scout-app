@@ -1,6 +1,8 @@
 class Entry < ApplicationRecord
-  belongs_to :company_profile
-  has_many :entries, dependent: :destroy
   belongs_to :job
-  belongs_to :user
+  belongs_to :use
+  validates :user_id, uniqueness: { 
+    scope: :job_id, 
+    message: "はすでにこの求人に応募済みです" 
+  }
 end

@@ -8,7 +8,7 @@ class Api::ScoutsController < ApplicationController
         status: scout.status,
         company_name: scout.company_user.company_profile.name,
         latest_message: scout.messages.last&.body,
-        created_at:scout.created_at,
+        created_at: scout.created_at,
         intern_user_id: scout.intern_user_id
       }
     end
@@ -30,7 +30,7 @@ class Api::ScoutsController < ApplicationController
     result = scouts.map do |scout|
       {
         id: scout.id,
-        intern_user_id: scout.intern_user&.intern_profile&.id,
+        intern_user_id: scout.intern_user_id,
         status: scout.status,
         created_at: scout.created_at,
         intern_name: scout.intern_user&.intern_profile&.name || "名前未設定",
@@ -40,6 +40,6 @@ class Api::ScoutsController < ApplicationController
   end
   private
   def scout_params
-    params.permit(:company_user_id, :intern_user_id)
+    params.permit(:intern_user_id).merge(company_user_id: current_user_id)
   end
 end

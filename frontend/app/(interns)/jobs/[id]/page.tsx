@@ -13,6 +13,7 @@ export default function page() {
   const [job, setJob] = useState<JobResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplied, setIsApplied] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
 
   const {
     register,
@@ -21,8 +22,14 @@ export default function page() {
   } = useForm<ApplyForm>();
 
   const fetchJob = async () => {
+    const userId = localStorage.getItem("current_user_id");
     try {
-      const res = await fetch(`http://localhost:3001/api/jobs/${id}`);
+      const res = await fetch(`http://localhost:3001/api/jobs/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Id": userId || "",
+        },
+      });
       if (!res.ok) {
         throw new Error("API通信に失敗しました");
       }
@@ -35,19 +42,59 @@ export default function page() {
       setIsLoading(false);
     }
   };
+
+  const checkIfApplied = async () => {
+    const userId = localStorage.getItem("current_user_id");
+    if (!userId) return;
+    try {
+      const res = await fetch("http://localhost:3001/api/entries/me", {
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Id": userId || "",
+        },
+      });
+      if (!res.ok) {
+        throw new Error("API通信に失敗しました");
+      }
+      const data = await res.json();
+      const alreadyApplied = data.some(
+        (entry: { job_id: number }) => String(entry.job_id) === String(id),
+      );
+      setHasApplied(alreadyApplied);
+    } catch (error) {
+      console.error(error);
+      toast.error("応募状況の確認に失敗しました");
+    }
+  };
+
   useEffect(() => {
     fetchJob();
+    checkIfApplied();
   }, []);
 
   const onSubmit = async (data: ApplyForm) => {
+    const userId = localStorage.getItem("current_user_id");
     try {
       const res = await fetch(`http://localhost:3001/api/jobs/${id}/entries`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-User-Id": userId || "",
         },
         body: JSON.stringify(data),
       });
+      if (res.status === 422) {
+        const errorData = await res.json();
+        const isDuplicate = errorData.messages?.some((msg: string) =>
+          msg.includes("応募済み"),
+        );
+
+        if (isDuplicate) {
+          setHasApplied(true); // フォームを「応募済み」表示に切り替える
+          toast.error("この求人にはすでに応募済みです");
+          return;
+        }
+      }
       if (!res.ok) {
         throw new Error("応募に失敗しました");
       }
@@ -77,12 +124,19 @@ export default function page() {
           </Link>
 
           <JobDetailCard job={job} />
-          <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
+          <div className="mt-8 rounded-2xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
             <h2 className="mb-6 text-2xl font-bold text-gray-900">
               この募集に応募する
             </h2>
 
-            {isApplied ? (
+            {/* 🌟 修正：三項演算子で3つの表示パターンを切り替える */}
+            {hasApplied ? (
+              <div className="rounded-xl bg-gray-100 p-6 text-center">
+                <p className="font-bold text-gray-500">
+                  この求人にはすでに応募済みです
+                </p>
+              </div>
+            ) : isApplied ? (
               <div className="rounded-xl bg-blue-50 p-6 text-center">
                 <p className="font-bold text-blue-600">応募が完了しました！</p>
                 <p className="mt-2 text-sm text-blue-500">

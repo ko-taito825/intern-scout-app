@@ -1,6 +1,10 @@
 "use client";
 import Link from "next/link";
-import { CompanyProfileResponse, SentScoutItem } from "@/app/_types/company";
+import {
+  AppliedEntry,
+  CompanyProfileResponse,
+  SentScoutItem,
+} from "@/app/_types/company";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -8,6 +12,7 @@ export default function page() {
   const router = useRouter();
   const [profile, setProfile] = useState<CompanyProfileResponse | null>(null);
   const [scouts, setScouts] = useState<SentScoutItem[]>([]);
+  const [appliedEntries, setAppliedEntries] = useState<AppliedEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -22,11 +27,14 @@ export default function page() {
           "Content-Type": "application/json",
           "X-User-Id": userId,
         };
-        const [profileRes, scoutRes] = await Promise.all([
+        const [profileRes, scoutRes, entryRes] = await Promise.all([
           fetch("http://localhost:3001/api/company_profiles/me", {
             headers: authHeaders,
           }),
           fetch("http://localhost:3001/api/scouts/sent", {
+            headers: authHeaders,
+          }),
+          fetch("http://localhost:3001/api/entries", {
             headers: authHeaders,
           }),
         ]);
@@ -37,6 +45,11 @@ export default function page() {
         if (scoutRes.ok) {
           const scoutData = await scoutRes.json();
           setScouts(scoutData);
+        }
+        if (entryRes.ok) {
+          const entryData = await entryRes.json();
+          setAppliedEntries(entryData);
+          console.log("応募データ:", entryData);
         }
       } catch (error) {
         console.error("データの取得に失敗しました", error);
@@ -104,6 +117,54 @@ export default function page() {
           </div>
         </section>
 
+        <section className="mx-auto max-w-4xl px-6 pt-12 pb-6">
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-zinc-900">届いた応募</h2>
+            <Link
+              href="/my-jobs"
+              className="text-sm font-bold text-purple-600 hover:underline"
+            >
+              自社の求人を見る →
+            </Link>
+          </div>
+
+          <div className="grid gap-4">
+            {appliedEntries.length === 0 ? (
+              <p className="text-zinc-500">まだ届いている応募はありません。</p>
+            ) : (
+              appliedEntries.map((entry) => (
+                <div
+                  key={`entry-${entry.id}`}
+                  className="block rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="w-full">
+                      <div className="flex items-center gap-3">
+                        <Link
+                          href={`/interns/${entry.applicant_id}`}
+                          className="font-bold text-zinc-900 transition hover:text-purple-600 hover:underline"
+                        >
+                          {entry.applicant_name} さん
+                        </Link>
+                        <span className="rounded bg-zinc-100 px-2 py-1 text-xs font-semibold text-zinc-600">
+                          応募先: {entry.job_title}
+                        </span>
+                      </div>
+                      <div className="mt-4 rounded-xl bg-zinc-50 p-4">
+                        <p className="whitespace-pre-wrap text-sm text-zinc-700">
+                          {entry.message}
+                        </p>
+                      </div>
+                      <p className="mt-4 text-xs text-zinc-400">
+                        {new Date(entry.created_at).toLocaleDateString("ja-JP")}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
         <section className="mx-auto max-w-4xl px-6 py-12">
           <div className="mb-8 flex items-center justify-between">
             <h2 className="text-2xl font-bold text-zinc-900">
