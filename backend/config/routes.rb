@@ -10,8 +10,16 @@ Rails.application.routes.draw do
         get :me
       end
     end
-    resources :jobs, only: [ :index, :show, :create, :update ]
-    resources :entries, only: [ :create ]
+    resources :jobs, only: [ :index, :show, :create, :update ] do
+      #学生が求人に応募するためのルート
+       resources :entries, only: [ :create ]
+    end
+    #企業が届いた応募をまとめてみるためのルート
+    resources :entries, only: [ :index ] do
+      collection do
+        get :me
+      end
+    end
     resources :scouts, only: [ :index, :create ] do
       collection do
         get :sent

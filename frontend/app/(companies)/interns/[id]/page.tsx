@@ -3,7 +3,7 @@ import Link from "next/link";
 import { InternProfileResponse, MessageForm } from "@/app/_types/Intern";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function page() {
@@ -43,10 +43,14 @@ export default function page() {
   }, []);
 
   const fetchScoutStatus = async (internUserId: number) => {
+    const userId = localStorage.getItem("current_user_id");
     try {
-      const res = await fetch(
-        "http://localhost:3001/api/scouts?company_user_id=1",
-      );
+      const res = await fetch("http://localhost:3001/api/scouts/sent", {
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Id": userId || "",
+        },
+      });
       if (!res.ok) return;
       const data = await res.json();
       const scouted = data.some(
@@ -61,15 +65,30 @@ export default function page() {
     }
   };
   const onSubmit = async (data: MessageForm) => {
+    const userId = localStorage.getItem("current_user_id");
     try {
       const scoutRes = await fetch("http://localhost:3001/api/scouts", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-User-Id": userId || "",
+        },
         body: JSON.stringify({
           company_user_id: 1,
           intern_user_id: intern?.user_id,
         }),
       });
+      if (scoutRes.status === 422) {
+        const errorData = await scoutRes.json();
+        const isDuplicate = errorData.messages.some((msg: string) =>
+          msg.includes("すでにスカウト済みです"),
+        );
+        if (isDuplicate) {
+          setIsScouted(true);
+          toast.error("この学生はすでにスカウト済みです");
+          return;
+        }
+      }
       if (!scoutRes.ok) {
         throw new Error("スカウト作成に失敗しました");
       }
@@ -79,7 +98,10 @@ export default function page() {
         `http://localhost:3001/api/scouts/${scout.id}/messages`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId || "",
+          },
           body: JSON.stringify({ body: data.body }),
         },
       );

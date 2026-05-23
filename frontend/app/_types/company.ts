@@ -24,3 +24,12 @@ export interface SentScoutItem {
   latest_message: string;
   created_at: string;
 }
+
+export interface AppliedEntry {
+  id: number;
+  message: string;
+  job_title: string;
+  applicant_name: string;
+  applicant_id: number;
+  created_at: string;
+}
