@@ -47,6 +47,22 @@ class Api::JobsController < ApplicationController
       }, status: :unprocessable_entity
     end
   end
+  def destroy
+    company_profile = CompanyProfile.find_by(user_id: current_user_id)
+    job = company_profile&.jobs&.find_by(id: params[:id])
+    if job.nil?
+      render json: { error: "募集が見つかりません" }, status: :not_found
+      return
+    end
+    if job.destroy
+      render json: { message: "募集を削除しました" }
+    else
+      render json: {
+        error: "募集の削除に失敗しました",
+        messages: job.errors.full_messages
+      }, status: :unprocessable_entity
+    end
+  end
   private
   def job_params
     params.permit(:title, :content, :requirements, :work_style)

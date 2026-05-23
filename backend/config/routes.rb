@@ -10,7 +10,7 @@ Rails.application.routes.draw do
         get :me
       end
     end
-    resources :jobs, only: [ :index, :show, :create, :update ] do
+    resources :jobs, only: [ :index, :show, :create, :update, :destroy ] do
       #学生が求人に応募するためのルート
        resources :entries, only: [ :create ]
     end
