@@ -1,6 +1,18 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function CompanyLayout() {
+  const router = useRouter();
+  const handleLogout = () => {
+    const isConfirmed = window.confirm("ログアウトしてもよろしいでしょうか？");
+    if (!isConfirmed) {
+      return;
+    }
+    localStorage.clear();
+    router.push("/");
+  };
   return (
     <>
       <header className="border-b border-gray-100 bg-white">
@@ -29,6 +41,12 @@ export default function CompanyLayout() {
             >
               マイページ
             </Link>
+            <button
+              onClick={handleLogout}
+              className="text-sm font-medium text-gray-600 transition-colors hover:text-purple-600"
+            >
+              ログアウト
+            </button>
           </nav>
         </div>
       </header>
