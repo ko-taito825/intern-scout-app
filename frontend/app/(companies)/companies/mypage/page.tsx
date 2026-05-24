@@ -193,16 +193,30 @@ export default function page() {
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-bold text-zinc-900 transition group-hover:text-purple-600">
-                        {scout.intern_name || "学生名"}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-zinc-900 transition group-hover:text-purple-600">
+                          {scout.intern_name || "学生名"}
+                        </h3>
+                        {scout.has_unread && (
+                          <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-600">
+                            未読
+                          </span>
+                        )}
+                      </div>
                       <p className="mt-2 line-clamp-2 text-sm text-zinc-600">
                         {scout.latest_message}
                       </p>
-                      <p className="mt-4 text-xs text-zinc-400">
-                        {new Date(scout.created_at).toLocaleDateString("ja-JP")}
+
+                      <p className="mt-4 text-xs font-medium text-zinc-400">
+                        {new Date(scout.created_at).toLocaleString("ja-JP", {
+                          month: "numeric",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </p>
                     </div>
+
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-50 transition group-hover:bg-purple-600 group-hover:text-white">
                       →
                     </div>

@@ -110,30 +110,49 @@ export default function page() {
           </div>
 
           <div className="grid gap-4">
-            {scouts.map((scout) => (
-              <Link
-                href={`/interns/chat/${scout.id}`}
-                key={scout.id}
-                className="group block cursor-pointer rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200 transition hover:ring-black"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h3 className="font-bold text-zinc-900 transition group-hover:text-blue-600">
-                      {scout.company_name}
-                    </h3>
-                    <p className="line-clamp-2 mt-2 text-sm text-zinc-600">
-                      {scout.latest_message}
-                    </p>
-                    <p className="mt-4 text-xs text-zinc-400">
-                      {new Date(scout.created_at).toLocaleDateString("ja-JP")}
-                    </p>
+            {scouts.length === 0 ? (
+              <p className="text-zinc-500">
+                まだ受信したスカウトはありません。
+              </p>
+            ) : (
+              scouts.map((scout) => (
+                <Link
+                  href={`/interns/chat/${scout.id}`}
+                  key={scout.id}
+                  className="group block cursor-pointer rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200 transition hover:ring-blue-500"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-zinc-900 transition group-hover:text-blue-600">
+                          {scout.company_name}
+                        </h3>
+                        {scout.has_unread && (
+                          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-600">
+                            未読
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="mt-2 line-clamp-2 text-sm text-zinc-600">
+                        {scout.latest_message}
+                      </p>
+                      <p className="mt-4 text-xs font-medium text-zinc-400">
+                        {new Date(scout.created_at).toLocaleString("ja-JP", {
+                          month: "numeric",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-50 transition group-hover:bg-blue-500 group-hover:text-white">
+                      →
+                    </div>
                   </div>
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-50 transition group-hover:bg-black group-hover:text-white">
-                    →
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))
+            )}
           </div>
         </section>
       </main>

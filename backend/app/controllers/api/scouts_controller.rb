@@ -16,6 +16,18 @@ class Api::ScoutsController < ApplicationController
     end
     render json: result
   end
+  def show
+    scout = Scout.find(params[:id])
+    user_id = request.headers["X-User-Id"]
+    current_user = User.find_by(id: user_id)
+    partner_name =
+    if current_user&.role == "company"
+     scout.intern_user&.intern_profile&.name || "学生名未設定"
+    else
+      scout.company_user&.company_profile&.name || "企業名未設定"
+    end
+    render json: scout.as_json.merge(partner_name: partner_name)
+  end
 
   def create
     scout = Scout.new(scout_params)

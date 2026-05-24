@@ -20,7 +20,7 @@ Rails.application.routes.draw do
         get :me
       end
     end
-    resources :scouts, only: [ :index, :create ] do
+    resources :scouts, only: [ :index, :create, :show ] do
       collection do
         get :sent
       end
