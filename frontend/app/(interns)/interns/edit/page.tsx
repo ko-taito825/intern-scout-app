@@ -11,8 +11,17 @@ export default function page() {
 
   useEffect(() => {
     const fetchProfile = async () => {
+      const userId = localStorage.getItem("current_user_id");
       try {
-        const res = await fetch("http://localhost:3001/api/intern_profiles/me");
+        const res = await fetch(
+          "http://localhost:3001/api/intern_profiles/me",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-User-Id": userId || "",
+            },
+          },
+        );
         if (!res.ok) {
           throw new Error("プロフィールの取得に失敗しました");
         }
@@ -30,10 +39,12 @@ export default function page() {
 
   const handleUpdate = async (data: InternProfileForm) => {
     try {
+      const userId = localStorage.getItem("current_user_id");
       const res = await fetch("http://localhost:3001/api/intern_profiles/2", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          "X-User-Id": userId || "",
         },
         body: JSON.stringify(data),
       });
@@ -41,7 +52,7 @@ export default function page() {
         throw new Error("更新に失敗しました");
       }
       toast.success("プロフィールを更新しました！");
-      router.push("/mypage");
+      router.push("/interns/mypage");
     } catch (error) {
       console.error(error);
       toast.error("通信エラーが発生しました");
