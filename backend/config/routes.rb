@@ -15,10 +15,11 @@ Rails.application.routes.draw do
        resources :entries, only: [ :create ]
     end
     #企業が届いた応募をまとめてみるためのルート
-    resources :entries, only: [ :index ] do
+    resources :entries, only: [ :index, :show ] do
       collection do
         get :me
       end
+      resources :entry_messages, only: [ :index, :create ]
     end
     resources :scouts, only: [ :index, :create, :show ] do
       collection do

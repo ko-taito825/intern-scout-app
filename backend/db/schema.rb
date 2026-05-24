@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_23_133259) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_24_100924) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -33,6 +33,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_133259) do
     t.bigint "user_id", null: false
     t.index ["job_id"], name: "index_entries_on_job_id"
     t.index ["user_id"], name: "index_entries_on_user_id"
+  end
+
+  create_table "entry_messages", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.bigint "entry_id", null: false
+    t.boolean "is_from_company", default: false, null: false
+    t.boolean "is_read", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry_id"], name: "index_entry_messages_on_entry_id"
   end
 
   create_table "intern_profiles", force: :cascade do |t|
@@ -89,6 +99,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_23_133259) do
   add_foreign_key "company_profiles", "users"
   add_foreign_key "entries", "jobs"
   add_foreign_key "entries", "users"
+  add_foreign_key "entry_messages", "entries"
   add_foreign_key "intern_profiles", "users"
   add_foreign_key "jobs", "company_profiles"
   add_foreign_key "messages", "scouts"

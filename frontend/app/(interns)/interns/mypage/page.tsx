@@ -1,12 +1,17 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { InternProfileResponse, ScoutInboxItem } from "../../../_types/Intern";
+import {
+  InternEntryItem,
+  InternProfileResponse,
+  ScoutInboxItem,
+} from "../../../_types/Intern";
 import { useRouter } from "next/navigation";
 export default function page() {
   const router = useRouter();
   const [profile, setProfile] = useState<InternProfileResponse | null>(null);
   const [scouts, setScouts] = useState<ScoutInboxItem[]>([]);
+  const [entries, setEntries] = useState<InternEntryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -21,11 +26,14 @@ export default function page() {
           "Content-Type": "application/json",
           "X-User-Id": userId,
         };
-        const [profileRes, scoutRes] = await Promise.all([
+        const [profileRes, scoutRes, entryRes] = await Promise.all([
           fetch("http://localhost:3001/api/intern_profiles/me", {
             headers: authHeaders,
           }),
           fetch("http://localhost:3001/api/scouts", {
+            headers: authHeaders,
+          }),
+          fetch("http://localhost:3001/api/entries/me", {
             headers: authHeaders,
           }),
         ]);
@@ -36,6 +44,10 @@ export default function page() {
         if (scoutRes.ok) {
           const scoutData = await scoutRes.json();
           setScouts(scoutData);
+        }
+        if (entryRes.ok) {
+          const entryData = await entryRes.json();
+          setEntries(entryData);
         }
       } catch (error) {
         console.error("データの取得に失敗しました", error);
@@ -101,7 +113,60 @@ export default function page() {
             </div>
           </div>
         </section>
+        <section className="mx-auto max-w-4xl px-6 pt-12 pb-6">
+          <div className="mb-8 flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-zinc-900">応募した求人</h2>
+          </div>
 
+          <div className="grid gap-4">
+            {entries.length === 0 ? (
+              <p className="text-zinc-500">まだ応募した求人はありません。</p>
+            ) : (
+              entries.map((entry) => (
+                <div
+                  key={`entry-${entry.id}`}
+                  className="block rounded-2xl bg-white p-6 shadow-sm ring-1 ring-zinc-200"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="w-full">
+                      <div className="flex items-center gap-3">
+                        <span className="font-bold text-zinc-900">
+                          {entry.company_name}
+                        </span>
+                        {entry.has_unread && (
+                          <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-600">
+                            未読
+                          </span>
+                        )}
+                        <span className="rounded bg-zinc-100 px-2 py-1 text-xs font-semibold text-zinc-600">
+                          応募先: {entry.job_title}
+                        </span>
+                      </div>
+                      <div className="mt-4 rounded-xl bg-zinc-50 p-4">
+                        <p className="whitespace-pre-wrap text-sm text-zinc-700">
+                          {entry.message}
+                        </p>
+                      </div>
+                      <p className="mt-4 text-xs text-zinc-400">
+                        {new Date(entry.created_at).toLocaleDateString("ja-JP")}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* チャットへのリンクボタン */}
+                  <div className="mt-4 flex w-full justify-end pt-4 border-t border-zinc-100">
+                    <Link
+                      href={`/interns/apply-chat/${entry.id}`}
+                      className="inline-flex items-center justify-center rounded-lg bg-black px-6 py-2 text-sm font-bold text-white transition hover:bg-zinc-800"
+                    >
+                      企業からのメッセージを見る →
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
         <section className="mx-auto max-w-4xl px-6 py-12">
           <div className="mb-8 flex items-center justify-between">
             <h2 className="text-2xl font-bold text-zinc-900">

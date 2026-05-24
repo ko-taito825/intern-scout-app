@@ -112,7 +112,7 @@ export default function page() {
     <>
       <div className="flex items-center border-b border-zinc-200 bg-white px-6 py-4 shadow-sm">
         <Link
-          href="/companies"
+          href="/companies/mypage"
           className="mr-4 flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-600"
         >
           ←

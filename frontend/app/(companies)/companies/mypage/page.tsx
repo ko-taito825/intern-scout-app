@@ -146,6 +146,11 @@ export default function page() {
                         >
                           {entry.applicant_name} さん
                         </Link>
+                        {entry.has_unread && (
+                          <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-600">
+                            未読
+                          </span>
+                        )}
                         <span className="rounded bg-zinc-100 px-2 py-1 text-xs font-semibold text-zinc-600">
                           応募先: {entry.job_title}
                         </span>
@@ -159,6 +164,14 @@ export default function page() {
                         {new Date(entry.created_at).toLocaleDateString("ja-JP")}
                       </p>
                     </div>
+                  </div>
+                  <div className="mt-4 flex w-full justify-end pt-4 border-t border-zinc-100">
+                    <Link
+                      href={`/companies/apply-chat/${entry.id}`}
+                      className="inline-flex items-center justify-center rounded-lg bg-black px-6 py-2 text-sm font-bold text-white transition hover:bg-zinc-800"
+                    >
+                      応募者とチャットする →
+                    </Link>
                   </div>
                 </div>
               ))
