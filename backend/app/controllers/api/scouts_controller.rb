@@ -3,11 +3,13 @@ class Api::ScoutsController < ApplicationController
     scouts = Scout.includes(company_user: :company_profile, messages: []).where(intern_user_id: current_user_id)
 
     result = scouts.map do |scout|
+      has_unread = scout.messages.any? { |m| m.is_from_company && !m.is_read }
       {
         id: scout.id,
         status: scout.status,
         company_name: scout.company_user.company_profile.name,
         latest_message: scout.messages.last&.body,
+        has_unread: has_unread,
         created_at: scout.created_at,
         intern_user_id: scout.intern_user_id
       }
@@ -26,14 +28,18 @@ class Api::ScoutsController < ApplicationController
   end
 
   def sent
-    scouts = Scout.includes(intern_user: :intern_profile).where(company_user_id: current_user_id).order(created_at: :desc)
+    scouts = Scout.includes(:messages, intern_user: :intern_profile).where(company_user_id: current_user_id).order(created_at: :desc)
     result = scouts.map do |scout|
+      has_unread = scout.messages.any? { |m| !m.is_from_company && !m.is_read }
       {
         id: scout.id,
         intern_user_id: scout.intern_user_id,
         status: scout.status,
         created_at: scout.created_at,
         intern_name: scout.intern_user&.intern_profile&.name || "名前未設定",
+        latest_message: scout.messages.last&.body,
+        has_unread: has_unread
+
       }
     end
     render json: result

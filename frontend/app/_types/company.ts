@@ -23,6 +23,7 @@ export interface SentScoutItem {
   intern_name: string;
   latest_message: string;
   created_at: string;
+  has_unread: boolean;
 }
 
 export interface AppliedEntry {
