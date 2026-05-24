@@ -3,8 +3,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { InternProfileResponse } from "../../_types/Intern";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function page() {
+  const router = useRouter();
   const [interns, setInterns] = useState<InternProfileResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [scoutedInternUserIds, setScoutedInternUserIds] = useState<number[]>(
@@ -26,10 +28,10 @@ export default function page() {
       setIsLoading(false);
     }
   };
-  const fetchScouts = async () => {
+  const fetchScouts = async (userId: string) => {
     try {
       const res = await fetch(
-        "http://localhost:3001/api/scouts?company_user_id=1",
+        `http://localhost:3001/api/scouts?company_user_id=${userId}`,
       );
       if (!res.ok) {
         throw new Error("スカウト一覧の取得に失敗しました");
@@ -47,8 +49,14 @@ export default function page() {
   };
 
   useEffect(() => {
+    const userId = localStorage.getItem("current_user_id");
+    if (!userId) {
+      toast.error("ログイン状態が確認できません");
+      router.push("/");
+      return;
+    }
     fetchInterns();
-    fetchScouts();
+    fetchScouts(userId);
   }, []);
 
   if (isLoading) {

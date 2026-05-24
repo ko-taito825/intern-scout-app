@@ -1,6 +1,17 @@
+"use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function InternHeader() {
+  const router = useRouter();
+  const handleLogout = () => {
+    const isConfirmed = window.confirm("ログアウトしてもよろしいでしょうか？");
+    if (!isConfirmed) {
+      return;
+    }
+    localStorage.clear();
+    router.push("/");
+  };
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 px-6 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between">
@@ -28,6 +39,12 @@ export default function InternHeader() {
           >
             マイページ
           </Link>
+          <button
+            onClick={handleLogout}
+            className="hover:text-sky-500 transition-colors"
+          >
+            ログアウト
+          </button>
         </nav>
       </div>
     </header>

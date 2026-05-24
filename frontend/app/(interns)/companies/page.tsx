@@ -3,11 +3,12 @@ import { CompanyProfileResponse } from "@/app/_types/company";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function page() {
   const [companies, setCompanies] = useState<CompanyProfileResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const router = useRouter();
   const fetchCompanies = async () => {
     try {
       const res = await fetch("http://localhost:3001/api/company_profiles");
@@ -24,6 +25,12 @@ export default function page() {
     }
   };
   useEffect(() => {
+    const userId = localStorage.getItem("current_user_id");
+    if (!userId) {
+      toast.error("ログイン状態が確認できません");
+      router.push("/");
+      return;
+    }
     fetchCompanies();
   }, []);
 
