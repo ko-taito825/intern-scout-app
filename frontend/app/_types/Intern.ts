@@ -29,4 +29,5 @@ export interface ScoutInboxItem {
   company_name: string;
   latest_message: string;
   created_at: string;
+  has_unread: boolean;
 }
