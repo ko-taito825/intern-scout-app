@@ -31,3 +31,11 @@ export interface ScoutInboxItem {
   created_at: string;
   has_unread: boolean;
 }
+export interface InternEntryItem {
+  id: number;
+  message: string;
+  created_at: string;
+  job_title: string;
+  company_name: string;
+  has_unread?: boolean;
+}

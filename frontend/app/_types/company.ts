@@ -33,4 +33,5 @@ export interface AppliedEntry {
   applicant_name: string;
   applicant_id: number;
   created_at: string;
+  has_unread: boolean;
 }

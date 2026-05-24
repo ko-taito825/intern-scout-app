@@ -1,18 +1,17 @@
 "use client";
-
-import { chatMessage } from "@/app/_types/message";
 import { useParams } from "next/navigation";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { chatMessage } from "@/app/_types/message";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 export default function page() {
   const params = useParams();
-  const scoutedId = params.id;
+  const entryId = params.id;
   const router = useRouter();
   const [messages, setMessages] = useState<chatMessage[]>([]);
-  const [partnerName, setPartnerName] = useState<string>("");
   const [inputMessage, setInputMessage] = useState("");
+  const [partnerName, setPartnerName] = useState<string>("");
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const fetchMessages = async () => {
@@ -24,7 +23,7 @@ export default function page() {
     }
     try {
       const res = await fetch(
-        `http://localhost:3001/api/scouts/${scoutedId}/messages`,
+        `http://localhost:3001/api/entries/${entryId}/entry_messages`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -50,7 +49,7 @@ export default function page() {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:3001/api/scouts/${scoutedId}`, {
+      const res = await fetch(`http://localhost:3001/api/entries/${entryId}`, {
         headers: {
           "Content-Type": "application/json",
           "X-User-Id": userId || "",
@@ -69,7 +68,7 @@ export default function page() {
   useEffect(() => {
     fetchMessages();
     fetchPartnerName();
-  }, [scoutedId]);
+  }, [entryId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -86,14 +85,19 @@ export default function page() {
     setIsSending(true);
     try {
       const res = await fetch(
-        `http://localhost:3001/api/scouts/${scoutedId}/messages`,
+        `http://localhost:3001/api/entries/${entryId}/entry_messages`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "X-User-Id": userId || "",
           },
-          body: JSON.stringify({ body: inputMessage }),
+          body: JSON.stringify({
+            entry_message: {
+              body: inputMessage,
+              is_from_company: false,
+            },
+          }),
         },
       );
       if (!res.ok) {
@@ -109,7 +113,6 @@ export default function page() {
       setIsSending(false);
     }
   };
-
   return (
     <>
       <div className="flex items-center border-b border-zinc-200 bg-white px-6 py-4 shadow-sm">
@@ -145,8 +148,8 @@ export default function page() {
                     <div
                       className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
                         isMe
-                          ? "bg-sky-500 text-white rounded-br-none"
-                          : "bg-purple-500 text-white rounded-bl-none"
+                          ? "bg-sky-500 text-white rounded-bl-none"
+                          : "bg-purple-500 text-white rounded-br-none"
                       }`}
                     >
                       <p className="whitespace-pre-wrap wrap-break-word">
@@ -160,8 +163,8 @@ export default function page() {
                         {new Date(msg.created_at).toLocaleTimeString("ja-JP", {
                           month: "numeric",
                           day: "numeric",
-                          hour: "numeric",
-                          minute: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
                         })}
                       </p>
                     </div>
