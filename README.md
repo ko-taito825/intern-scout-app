@@ -1,3 +1,4 @@
+
 # Merge(インターン生×企業 マッチングサービス)
 
 インターン生と企業をつなぐ、スカウト型マッチングサービスです。
@@ -15,14 +16,17 @@
 ---
 
 ##  実際の画面
+<img width="1710" height="985" alt="スクリーンショット 2026-05-24 22 36 40" src="https://github.com/user-attachments/assets/5c50441b-cc75-45ab-8477-07f83813f1c2" />
 
 ### インターン生側（テーマカラー：青）
-**マイページ（未読バッジ表示） / 求人一覧**
-![インターン生側画面](ここに画像をドラッグ＆ドロップするとURLになります)
+**マイページ**
+<img width="1710" height="988" alt="スクリーンショット 2026-05-24 22 53 12" src="https://github.com/user-attachments/assets/0561ccfa-95f2-4ea3-8b6d-e030556dae34" />
+
 
 ### 企業側（テーマカラー：紫）
-**スカウト画面 / チャット画面**
-![企業側画面](ここに画像をドラッグ＆ドロップするとURLになります)
+**マイページ**
+<img width="1710" height="982" alt="スクリーンショット 2026-05-24 22 54 52" src="https://github.com/user-attachments/assets/6a2a3c23-de4f-4e08-a228-511089e4ef10" />
+
 
 ---
 
@@ -48,8 +52,8 @@
 
 | 領域 | 技術スタック |
 | :--- | :--- |
-| **フロントエンド** | Next.js (App Router) / TypeScript / Tailwind CSS |
-| **バックエンド** | Ruby on Rails (API モード) |
+| **フロントエンド** | Next.js / TypeScript / Tailwind CSS |
+| **バックエンド** | Ruby on Rails  |
 | **データベース** | PostgreSQL |
 
 ---
