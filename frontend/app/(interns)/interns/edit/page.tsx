@@ -22,11 +22,10 @@ export default function page() {
             },
           },
         );
-        if (!res.ok) {
-          throw new Error("プロフィールの取得に失敗しました");
+        if (res.ok) {
+          const profileData = await res.json();
+          setProfile(profileData);
         }
-        const profileData = await res.json();
-        setProfile(profileData);
       } catch (error) {
         console.error("データの取得に失敗しました", error);
         toast.error(
@@ -40,14 +39,17 @@ export default function page() {
   const handleUpdate = async (data: InternProfileForm) => {
     try {
       const userId = localStorage.getItem("current_user_id");
-      const res = await fetch("http://localhost:3001/api/intern_profiles/2", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": userId || "",
+      const res = await fetch(
+        `http://localhost:3001/api/intern_profiles/${userId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId || "",
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
       if (!res.ok) {
         throw new Error("更新に失敗しました");
       }

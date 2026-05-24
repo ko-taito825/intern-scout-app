@@ -40,6 +40,8 @@ export default function page() {
         if (profileRes.ok) {
           const profileData = await profileRes.json();
           setProfile(profileData);
+        } else {
+          setProfile(null);
         }
         if (scoutRes.ok) {
           const scoutData = await scoutRes.json();
@@ -55,6 +57,7 @@ export default function page() {
         setIsLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
@@ -76,7 +79,7 @@ export default function page() {
                   インターン生マイページ
                 </span>
                 <h1 className="mt-4 text-4xl font-extrabold text-zinc-900">
-                  {profile?.name || "名前未設定"}
+                  {profile ? profile.name : "プロフィールを作成しましょう"}
                 </h1>
                 <p className="mt-2 text-lg text-zinc-600">
                   {profile?.university || "大学未設定"} /{" "}
