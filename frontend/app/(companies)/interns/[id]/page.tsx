@@ -22,7 +22,7 @@ export default function page() {
   const fetchIntern = async () => {
     try {
       const res = await fetch(
-        `http://localhost:3001/api/intern_profiles/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/intern_profiles/${id}`,
       );
       if (!res.ok) {
         throw new Error("APIの通信に失敗しました。");
@@ -45,12 +45,16 @@ export default function page() {
   const fetchScoutStatus = async (internUserId: number) => {
     const userId = localStorage.getItem("current_user_id");
     try {
-      const res = await fetch("http://localhost:3001/api/scouts/sent", {
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": userId || "",
+      const res = await fetch(
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+          "/api/scouts/sent",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId || "",
+          },
         },
-      });
+      );
       if (!res.ok) return;
       const data = await res.json();
       const scouted = data.some(
@@ -67,17 +71,21 @@ export default function page() {
   const onSubmit = async (data: MessageForm) => {
     const userId = localStorage.getItem("current_user_id");
     try {
-      const scoutRes = await fetch("http://localhost:3001/api/scouts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": userId || "",
+      const scoutRes = await fetch(
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+          "/api/scouts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId || "",
+          },
+          body: JSON.stringify({
+            company_user_id: 1,
+            intern_user_id: intern?.user_id,
+          }),
         },
-        body: JSON.stringify({
-          company_user_id: 1,
-          intern_user_id: intern?.user_id,
-        }),
-      });
+      );
       if (scoutRes.status === 422) {
         const errorData = await scoutRes.json();
         const isDuplicate = errorData.messages.some((msg: string) =>
@@ -95,7 +103,7 @@ export default function page() {
       const scout = await scoutRes.json();
 
       const messageRes = await fetch(
-        `http://localhost:3001/api/scouts/${scout.id}/messages`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/scouts/${scout.id}/messages`,
         {
           method: "POST",
           headers: {

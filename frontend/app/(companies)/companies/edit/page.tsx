@@ -22,7 +22,8 @@ export default function page() {
       }
       try {
         const res = await fetch(
-          "http://localhost:3001/api/company_profiles/me",
+          (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+            "/api/company_profiles/me",
           {
             headers: {
               "Content-Type": "application/json",
@@ -49,7 +50,7 @@ export default function page() {
       return;
     }
     const res = await fetch(
-      `http://localhost:3001/api/company_profiles/${profile.id}`,
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/company_profiles/${profile.id}`,
       {
         method: "PATCH",
         headers: {

@@ -24,12 +24,15 @@ export default function page() {
   const fetchJob = async () => {
     const userId = localStorage.getItem("current_user_id");
     try {
-      const res = await fetch(`http://localhost:3001/api/jobs/${id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": userId || "",
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/jobs/${id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId || "",
+          },
         },
-      });
+      );
       if (!res.ok) {
         throw new Error("API通信に失敗しました");
       }
@@ -47,12 +50,16 @@ export default function page() {
     const userId = localStorage.getItem("current_user_id");
     if (!userId) return;
     try {
-      const res = await fetch("http://localhost:3001/api/entries/me", {
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": userId || "",
+      const res = await fetch(
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+          "/api/entries/me",
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId || "",
+          },
         },
-      });
+      );
       if (!res.ok) {
         throw new Error("API通信に失敗しました");
       }
@@ -75,14 +82,17 @@ export default function page() {
   const onSubmit = async (data: ApplyForm) => {
     const userId = localStorage.getItem("current_user_id");
     try {
-      const res = await fetch(`http://localhost:3001/api/jobs/${id}/entries`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": userId || "",
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/jobs/${id}/entries`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId || "",
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
       if (res.status === 422) {
         const errorData = await res.json();
         const isDuplicate = errorData.messages?.some((msg: string) =>

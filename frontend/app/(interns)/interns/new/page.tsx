@@ -18,14 +18,18 @@ export default function page() {
   }, [router]);
   const handleCreate = async (data: InternProfileForm) => {
     try {
-      const res = await fetch("http://localhost:3001/api/intern_profiles", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const res = await fetch(
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+          "/api/intern_profiles",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-        body: JSON.stringify(data),
-      });
+          body: JSON.stringify(data),
+        },
+      );
       if (!res.ok) {
         throw new Error(`登録に失敗しました: ${res.status}`);
       }

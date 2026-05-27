@@ -16,14 +16,18 @@ export default function page() {
       return;
     }
     try {
-      const res = await fetch("http://localhost:3001/api/jobs", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": userId,
+      const res = await fetch(
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+          "/api/jobs",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId,
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
       if (!res.ok) {
         throw new Error(`登録に失敗しました: ${res.status}`);
       }
