@@ -14,7 +14,10 @@ export default function page() {
   );
   const fetchInterns = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/intern_profiles");
+      const res = await fetch(
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+          "/api/intern_profiles",
+      );
       if (!res.ok) {
         throw new Error("API通信に失敗しました");
       }
@@ -31,7 +34,7 @@ export default function page() {
   const fetchScouts = async (userId: string) => {
     try {
       const res = await fetch(
-        `http://localhost:3001/api/scouts?company_user_id=${userId}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/scouts?company_user_id=${userId}`,
       );
       if (!res.ok) {
         throw new Error("スカウト一覧の取得に失敗しました");

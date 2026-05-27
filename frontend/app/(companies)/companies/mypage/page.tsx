@@ -28,15 +28,27 @@ export default function page() {
           "X-User-Id": userId,
         };
         const [profileRes, scoutRes, entryRes] = await Promise.all([
-          fetch("http://localhost:3001/api/company_profiles/me", {
-            headers: authHeaders,
-          }),
-          fetch("http://localhost:3001/api/scouts/sent", {
-            headers: authHeaders,
-          }),
-          fetch("http://localhost:3001/api/entries", {
-            headers: authHeaders,
-          }),
+          fetch(
+            (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+              "/api/company_profiles/me",
+            {
+              headers: authHeaders,
+            },
+          ),
+          fetch(
+            (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+              "/api/scouts/sent",
+            {
+              headers: authHeaders,
+            },
+          ),
+          fetch(
+            (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+              "/api/entries",
+            {
+              headers: authHeaders,
+            },
+          ),
         ]);
         if (profileRes.ok) {
           const profileData = await profileRes.json();

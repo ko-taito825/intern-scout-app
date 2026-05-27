@@ -14,7 +14,8 @@ export default function page() {
       const userId = localStorage.getItem("current_user_id");
       try {
         const res = await fetch(
-          "http://localhost:3001/api/intern_profiles/me",
+          (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+            "/api/intern_profiles/me",
           {
             headers: {
               "Content-Type": "application/json",
@@ -40,7 +41,7 @@ export default function page() {
     try {
       const userId = localStorage.getItem("current_user_id");
       const res = await fetch(
-        `http://localhost:3001/api/intern_profiles/${userId}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/intern_profiles/${userId}`,
         {
           method: "PATCH",
           headers: {

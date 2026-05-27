@@ -51,7 +51,6 @@ class Api::ScoutsController < ApplicationController
         intern_name: scout.intern_user&.intern_profile&.name || "名前未設定",
         latest_message: scout.messages.last&.body,
         has_unread: has_unread
-
       }
     end
     render json: result
