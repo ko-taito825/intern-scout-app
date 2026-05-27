@@ -129,7 +129,6 @@ export default function page() {
               この募集に応募する
             </h2>
 
-            {/* 🌟 修正：三項演算子で3つの表示パターンを切り替える */}
             {hasApplied ? (
               <div className="rounded-xl bg-gray-100 p-6 text-center">
                 <p className="font-bold text-gray-500">

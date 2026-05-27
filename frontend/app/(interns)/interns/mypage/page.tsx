@@ -156,7 +156,6 @@ export default function page() {
                     </div>
                   </div>
 
-                  {/* チャットへのリンクボタン */}
                   <div className="mt-4 flex w-full justify-end pt-4 border-t border-zinc-100">
                     <Link
                       href={`/interns/apply-chat/${entry.id}`}
