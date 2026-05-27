@@ -7,12 +7,12 @@ class Api::EntriesController < ApplicationController
       return
     end
 
-    entries = Entry.includes(:job, user: :intern_profile)
+    entries = Entry.includes(:job,  entry_messages: [], user: :intern_profile)
                    .where(job_id: company_profile.jobs.pluck(:id))
                    .order(created_at: :desc)
 
     result = entries.map do |entry|
-      has_unread = entry.entry_messages.where(is_from_company: false, is_read: false).exists?
+    has_unread = entry.entry_messages.any? { |m| m.is_from_company == false && !m.is_read }
       {
         id: entry.id,
         message: entry.message,
@@ -46,12 +46,12 @@ class Api::EntriesController < ApplicationController
     end
   end
   def me
-   entries = Entry.includes(job: :company_profile)
+   entries = Entry.includes(job: :company_profile, entry_messages: [])
                    .where(user_id: current_user_id)
                    .order(created_at: :desc)
 
     result = entries.map do |entry|
-      has_unread = entry.entry_messages.where(is_from_company: true, is_read: false).exists?
+      has_unread = entry.entry_messages.any? { |m| m.is_from_company  && !m.is_read }
       {
         id: entry.id,
         message: entry.message,
