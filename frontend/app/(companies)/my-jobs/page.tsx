@@ -18,12 +18,16 @@ export default function page() {
         return;
       }
       try {
-        const res = await fetch("http://localhost:3001/api/jobs", {
-          headers: {
-            "Content-Type": "application/json",
-            "X-User-Id": userId || "",
+        const res = await fetch(
+          (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+            "/api/jobs",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "X-User-Id": userId || "",
+            },
           },
-        });
+        );
         if (!res.ok) {
           throw new Error("API通信に失敗しました");
         }

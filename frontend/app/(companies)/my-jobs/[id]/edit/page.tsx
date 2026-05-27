@@ -22,7 +22,9 @@ export default function page() {
     }
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`http://localhost:3001/api/jobs/${id}`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/jobs/${id}`,
+        );
         if (!res.ok) {
           throw new Error("募集詳細の取得に失敗しました");
         }
@@ -47,14 +49,17 @@ export default function page() {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:3001/api/jobs/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": userId,
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/jobs/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId,
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
       if (!res.ok) {
         throw new Error("更新に失敗しました");
       }
@@ -78,13 +83,16 @@ export default function page() {
       return;
     }
     try {
-      const res = await fetch(`http://localhost:3001/api/jobs/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          "X-User-Id": userId,
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/jobs/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            "X-User-Id": userId,
+          },
         },
-      });
+      );
       if (!res.ok) {
         throw new Error("削除に失敗しました");
       }

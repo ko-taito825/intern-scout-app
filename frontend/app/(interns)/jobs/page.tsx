@@ -11,7 +11,10 @@ export default function page() {
   const router = useRouter();
   const fetchJobs = async () => {
     try {
-      const res = await fetch("http://localhost:3001/api/jobs");
+      const res = await fetch(
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+          "/api/jobs",
+      );
       if (!res.ok) {
         throw new Error("API通信に失敗しました");
       }
