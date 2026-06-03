@@ -1,6 +1,7 @@
 "use client";
 
 import CompanyFrom from "@/app/_components/CompanyForm";
+import { useFetch } from "@/app/_hooks/useFetch";
 import {
   CompanyProfileForm,
   CompanyProfileResponse,
@@ -11,42 +12,24 @@ import { toast } from "sonner";
 
 export default function page() {
   const router = useRouter();
-  const [profile, setProfile] = useState<CompanyProfileResponse | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      const userId = localStorage.getItem("current_user_id");
-      if (!userId) {
-        router.push("/companies/new");
-        return;
-      }
-      try {
-        const res = await fetch(
-          (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
-            "/api/company_profiles/me",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-User-Id": userId,
-            },
-          },
-        );
-        if (res.ok) {
-          const profileData = await res.json();
-          setProfile(profileData);
-        } else {
-          console.error("プロフィールの取得に失敗しました");
-        }
-      } catch (error) {
-        console.error("ネットワークエラーが発生しました", error);
-      }
-    };
-    fetchProfile();
+    const id = localStorage.getItem("current_user_id");
+    if (!id) router.push("/companies/new");
+    else setUserId(id);
   }, []);
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const headers = userId ? { "X-User-Id": userId } : null;
+  const { data: profile, isLoading } = useFetch<CompanyProfileResponse>(
+    userId ? `${BASE}/api/companies/${userId}` : null,
+    headers,
+  );
+
   const handleUpdate = async (data: CompanyProfileForm) => {
     const userId = localStorage.getItem("current_user_id");
     if (!userId || !profile?.id) {
-      alert("ログイン状態が確認できません、再度企業としてログインしてください");
+      toast.error("ログイン状態が確認できません、再度企業としてログインしてください");
       return;
     }
     const res = await fetch(
@@ -67,6 +50,13 @@ export default function page() {
     toast.success("プロフィールを更新できました");
     router.push("/companies/mypage");
   };
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center font-bold text-zinc-500">
+        Loading...
+      </div>
+    );
+  }
   return (
     <>
       <main className="min-h-screen bg-gray-50 px-6 py-12">

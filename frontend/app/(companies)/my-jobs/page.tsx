@@ -4,51 +4,29 @@ import { JobPosting } from "@/app/_types/job";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useFetch } from "@/app/_hooks/useFetch";
 
 export default function page() {
-  const [jobs, setJobs] = useState<JobPosting[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
   useEffect(() => {
-    const fetchJobs = async () => {
-      const userId = localStorage.getItem("current_user_id");
-      if (!userId) {
-        toast.error("ログイン状態が確認できません");
-        router.push("/");
-        return;
-      }
-      try {
-        const res = await fetch(
-          (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
-            "/api/jobs",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              "X-User-Id": userId || "",
-            },
-          },
-        );
-        if (!res.ok) {
-          throw new Error("API通信に失敗しました");
-        }
-        const data: JobPosting[] = await res.json();
-        setJobs(data);
-        toast.success("募集一覧を取得しました");
-      } catch (error) {
-        console.error(error);
-        toast.error("募集一覧の取得に失敗しました");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchJobs();
+    const id = localStorage.getItem("current_user_id");
+    if (!id) {
+      toast.error("ログイン状態が確認できません");
+      router.push("/companies/new");
+      return;
+    }
+    setUserId(id);
   }, []);
-
-  if (isLoading) {
-    return <p className="p-8">募集の一覧を取得中...</p>;
+  const headers = userId ? { "X-User-Id": userId } : null;
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const { data: jobsData, isLoading: jobsLoading } = useFetch<JobPosting[]>(
+    userId ? `${BASE}/api/job_postings/my` : null,
+    headers,
+  );
+  if (jobsLoading) {
+    return <p className="p-8">募集要項の一覧を取得中...</p>;
   }
-
   return (
     <main className="min-h-screen bg-gray-50 px-6 py-12">
       <div className="mx-auto max-w-4xl">
@@ -70,7 +48,7 @@ export default function page() {
           </Link>
         </div>
 
-        {jobs.length === 0 ? (
+        {jobsData?.length === 0 ? (
           <div className="rounded-2xl bg-white p-12 text-center shadow-sm border border-gray-100">
             <p className="text-gray-500 font-medium">
               現在、作成された募集要項はありません。
@@ -84,7 +62,7 @@ export default function page() {
           </div>
         ) : (
           <div className="space-y-4">
-            {jobs.map((job) => (
+            {jobsData?.map((job) => (
               <div
                 key={job.id}
                 className="flex flex-col justify-between rounded-2xl bg-white p-6 shadow-sm border border-gray-100 transition-all hover:shadow-md sm:flex-row sm:items-center"

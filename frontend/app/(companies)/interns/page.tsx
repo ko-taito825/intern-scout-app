@@ -4,65 +4,29 @@ import { useEffect, useState } from "react";
 import { InternProfileResponse } from "../../_types/Intern";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useFetch } from "@/app/_hooks/useFetch";
 
 export default function page() {
   const router = useRouter();
-  const [interns, setInterns] = useState<InternProfileResponse[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [scoutedInternUserIds, setScoutedInternUserIds] = useState<number[]>(
-    [],
-  );
-  const fetchInterns = async () => {
-    try {
-      const res = await fetch(
-        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
-          "/api/intern_profiles",
-      );
-      if (!res.ok) {
-        throw new Error("API通信に失敗しました");
-      }
-      const data: InternProfileResponse[] = await res.json();
-      setInterns(data);
-      toast.success("インターン生一覧を取得しました");
-    } catch (error) {
-      console.error(error);
-      toast.error("インターン生一覧の取得に失敗しました");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  const fetchScouts = async (userId: string) => {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/scouts?company_user_id=${userId}`,
-      );
-      if (!res.ok) {
-        throw new Error("スカウト一覧の取得に失敗しました");
-      }
-      const data = await res.json();
-      const ids = data.map(
-        (scout: { intern_user_id: number }) => scout.intern_user_id,
-      );
-      setScoutedInternUserIds(ids);
-      toast.success("スカウト一覧を取得しました");
-    } catch (error) {
-      console.error(error);
-      toast.error("スカウト一覧の取得に失敗しました");
-    }
-  };
-
+  const [userId, setUserId] = useState<string | null>(null);
   useEffect(() => {
-    const userId = localStorage.getItem("current_user_id");
-    if (!userId) {
+    const id = localStorage.getItem("current_user_id");
+    if (!id) {
       toast.error("ログイン状態が確認できません");
-      router.push("/");
+      router.push("/companies/new");
       return;
     }
-    fetchInterns();
-    fetchScouts(userId);
+    setUserId(id);
   }, []);
-
-  if (isLoading) {
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const headers = userId ? { "X-User-Id": userId } : null;
+  const { data: internsData, isLoading: internsLoading } = useFetch<
+    InternProfileResponse[]
+  >(`${BASE}/api/interns`);
+  const { data: scoutsData, isLoading: scoutsLoading } = useFetch<
+    { intern_user_id: number }[]
+  >(userId ? `${BASE}/api/scouts/sent` : null, headers);
+  if (internsLoading || scoutsLoading) {
     return <p className="p-8">インターン生の一覧を取得中...</p>;
   }
 
@@ -74,14 +38,16 @@ export default function page() {
           登録されているインターン生を確認できます
         </p>
 
-        {interns.length === 0 ? (
+        {internsData?.length === 0 ? (
           <p className="text-gray-500">
             登録されているインターン生はいません。
           </p>
         ) : (
           <div className="grid gap-5 md:grid-cols-2">
-            {interns.map((intern) => {
-              const isScouted = scoutedInternUserIds.includes(intern.user_id);
+            {internsData?.map((intern) => {
+              const isScouted = scoutsData?.some(
+                (scout) => scout.intern_user_id === intern.user_id,
+              );
               return (
                 <div
                   key={intern.id}

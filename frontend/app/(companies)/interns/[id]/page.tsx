@@ -3,71 +3,39 @@ import Link from "next/link";
 import { InternProfileResponse, MessageForm } from "@/app/_types/Intern";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { useFetch } from "@/app/_hooks/useFetch";
 
 export default function page() {
   const params = useParams();
   const id = params.id;
-  const [intern, setIntern] = useState<InternProfileResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [messageSent, setMessageSent] = useState(false);
-  const [isScouted, setIsScouted] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
   } = useForm<MessageForm>();
-  const fetchIntern = async () => {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/intern_profiles/${id}`,
-      );
-      if (!res.ok) {
-        throw new Error("APIの通信に失敗しました。");
-      }
-      const data: InternProfileResponse = await res.json();
-      setIntern(data);
-      fetchScoutStatus(data.user_id);
-      toast.success("インターン生の詳細を取得しました");
-    } catch (error) {
-      console.error("Error fetching intern profile:", error);
-      toast.error("インターン生詳細の取得に失敗しました");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [userId, setUserId] = useState<string | null>(null);
+
   useEffect(() => {
-    fetchIntern();
+    const id = localStorage.getItem("current_user_id");
+    if (id) setUserId(id);
   }, []);
 
-  const fetchScoutStatus = async (internUserId: number) => {
-    const userId = localStorage.getItem("current_user_id");
-    try {
-      const res = await fetch(
-        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
-          "/api/scouts/sent",
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-User-Id": userId || "",
-          },
-        },
-      );
-      if (!res.ok) return;
-      const data = await res.json();
-      const scouted = data.some(
-        (scout: { intern_user_id: number }) =>
-          scout.intern_user_id === internUserId,
-      );
-      setIsScouted(scouted);
-      toast.success("スカウト状況を取得しました");
-    } catch (error) {
-      console.error(error);
-      toast.error("スカウト状況の取得に失敗しました");
-    }
-  };
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+  const { data: internData, isLoading: internLoading } =
+    useFetch<InternProfileResponse>(`${BASE}/api/interns/${id}`);
+  const headers = userId ? { "X-User-Id": userId } : null;
+  const { data: scoutData = [] } = useFetch<{ intern_user_id: number }[]>(
+    userId ? `${BASE}/api/scouts?intern_id=${id}` : null,
+    headers,
+  );
+  const isScouted = scoutData.some(
+    (scout) => scout.intern_user_id === internData?.user_id,
+  );
   const onSubmit = async (data: MessageForm) => {
     const userId = localStorage.getItem("current_user_id");
     try {
@@ -81,8 +49,8 @@ export default function page() {
             "X-User-Id": userId || "",
           },
           body: JSON.stringify({
-            company_user_id: 1,
-            intern_user_id: intern?.user_id,
+            company_user_id: userId,
+            intern_user_id: internData?.user_id,
           }),
         },
       );
@@ -92,7 +60,7 @@ export default function page() {
           msg.includes("すでにスカウト済みです"),
         );
         if (isDuplicate) {
-          setIsScouted(true);
+          setMessageSent(true);
           toast.error("この学生はすでにスカウト済みです");
           return;
         }
@@ -122,11 +90,11 @@ export default function page() {
       toast.error("送信に失敗しました");
     }
   };
-  if (isLoading) {
+  if (internLoading) {
     return <p className="p-8">インターン生の詳細情報を取得中</p>;
   }
 
-  if (!intern) {
+  if (!internData) {
     return <p className="p-8">インターン生の詳細情報が見つかりません。</p>;
   }
 
@@ -141,56 +109,56 @@ export default function page() {
             ← インターン生一覧に戻る
           </Link>
           <h1 className="mb-12 text-5xl font-bold tracking-tight text-black">
-            {intern.name}
+            {internData.name}
           </h1>
 
           <div className="space-y-8 text-lg text-gray-700">
             <div className="flex items-start">
               <p className="w-40 text-xl font-semibold text-gray-900">大学名</p>
 
-              <p className="leading-8">{intern.university}</p>
+              <p className="leading-8">{internData.university}</p>
             </div>
 
             <div className="flex items-start">
               <p className="w-40 text-xl font-semibold text-gray-900">学年</p>
 
-              <p className="leading-8">{intern.grade}</p>
+              <p className="leading-8">{internData.grade}</p>
             </div>
 
             <div className="flex items-start">
               <p className="w-40 text-xl font-semibold text-gray-900">自己PR</p>
 
-              <p className="max-w-3xl leading-9">{intern.bio}</p>
+              <p className="max-w-3xl leading-9">{internData.bio}</p>
             </div>
 
-            {intern.github_url && (
+            {internData.github_url && (
               <div className="flex items-start">
                 <p className="w-40 text-xl font-semibold text-gray-900">
                   GitHub
                 </p>
 
                 <a
-                  href={intern.github_url}
+                  href={internData.github_url}
                   target="_blank"
                   className="break-all text-blue-600 hover:underline"
                 >
-                  {intern.github_url}
+                  {internData.github_url}
                 </a>
               </div>
             )}
 
-            {intern.portfolio_url && (
+            {internData.portfolio_url && (
               <div className="flex items-start">
                 <p className="w-40 text-xl font-semibold text-gray-900">
                   ポートフォリオ
                 </p>
 
                 <a
-                  href={intern.portfolio_url}
+                  href={internData.portfolio_url}
                   target="_blank"
                   className="break-all text-blue-600 hover:underline"
                 >
-                  {intern.portfolio_url}
+                  {internData.portfolio_url}
                 </a>
               </div>
             )}
@@ -200,12 +168,10 @@ export default function page() {
               スカウトメッセージを送る
             </h2>
 
-            {isScouted || messageSent ? (
-              <p className="font-semibold text-gray-500">
-                {isScouted
-                  ? "すでにスカウット済みです"
-                  : "メッセージを送信しました！"}
-              </p>
+            {messageSent ? (
+              <p>メッセージを送信しました！</p>
+            ) : isScouted ? (
+              <p>すでにスカウット済みです</p>
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <textarea
