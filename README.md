@@ -71,7 +71,7 @@
 
 ```ruby
 # 学生側：企業からの未読メッセージがあるか判定
-has_unread = entry.entry_messages.where(is_from_company: true, is_read: false).exists?
+has_unread = entry.entry_messages.any? { |m| m.is_from_company && !m.is_read }
 ```
 
 ### 2. フロントエンドとバックエンドの堅牢な API 連携
@@ -119,7 +119,18 @@ end
 
 ---
 
-##  ローカルでの起動方法
+## 開発環境（前提条件）
+
+以下の環境でアプリケーションを実行・動作確認しています。
+* **Ruby**: 3.3.11
+* **Ruby on Rails**: 8.1.3
+* **Node.js**: v24.3.0
+* **npm**: 11.4.2
+* **データベース**: PostgreSQL 18.3 (Homebrew)
+
+---
+
+## ローカルでの起動方法
 
 ### 方法1: Docker（推奨）
 
