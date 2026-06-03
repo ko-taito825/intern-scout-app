@@ -129,45 +129,52 @@ end
 
 ---
 
-##  ローカルでの起動方法
+## ローカルでの起動方法
 
-リポジトリをクローンした後、ターミナルを2つ開き、フロントエンドとバックエンドをそれぞれ起動してください。
+### 方法1: Docker（推奨）
 
-### 1. バックエンド (Ruby on Rails) の起動
-1つ目のターミナルで以下のコマンドを順に実行します。
+Docker Desktopがインストールされていれば、コマンド1つで起動できます。
 
 ```bash
-# バックエンドのディレクトリに移動
-cd backend
-
-# 依存関係（Gem）のインストール
-bundle install
-
-# データベースの作成・マイグレーション・シードデータの投入
-rails db:create db:migrate db:seed
-
-# 開発サーバーをポート3001で起動
-rails s -p 3001
+git clone <リポジトリURL>
+cd intern-scout-app
+docker compose up --build --watch
 ```
-### 2. フロントエンド (Next.js) の起動
-2つ目のターミナルで以下のコマンドを順に実行します。
+
+初回のみDBの初期化が必要です：
 
 ```bash
-# フロントエンドのディレクトリに移動
+docker exec -it intern-scout-backend ./bin/rails db:create db:migrate db:seed
+```
+
+| サービス | URL |
+| :--- | :--- |
+| フロントエンド | http://localhost:3001 |
+| バックエンド | http://localhost:3000 |
+
+### 方法2: ローカル環境
+
+以下の環境が必要です：
+- Ruby 3.3.11
+- Node.js v24.3.0
+- PostgreSQL
+
+**バックエンド**
+```bash
+cd backend
+bundle install
+rails db:create db:migrate db:seed
+rails s
+```
+
+**フロントエンド**（別ターミナルで）
+```bash
 cd frontend
-
-# 依存パッケージのインストール
 npm install
-
-# 開発用サーバーの起動
 npm run dev
 ```
 
-### 3. ブラウザでの確認
-両方のサーバーが起動したら、ブラウザで `http://localhost:3000` にアクセスしてください。
-
----
-
+アプリは `http://localhost:3000` で起動します。
 ### 動作確認のポイント（検証方法）
 このアプリケーションは、ブラウザのローカルストレージを使用してログイン状態を管理しています。
 複数の役割（企業とインターン生）を同時にテストし、リアルタイムチャットや未読通知の挙動を確認したい場合は、**「通常モードのブラウザ」と「シークレットモード（プライベートブラウザ）」**を横に並べて併用することで、セッションを完全に分離した状態でスムーズに動作確認が可能です。
