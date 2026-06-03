@@ -5,17 +5,17 @@ import { chatMessage } from "@/app/_types/message";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useFetch } from "@/app/_hooks/useFetch";
 export default function page() {
   const params = useParams();
   const scoutedId = params.id;
   const router = useRouter();
   const [messages, setMessages] = useState<chatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
-  const [partnerName, setPartnerName] = useState<string>("");
+  const [userId, setUserId] = useState<string | null>(null);
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const fetchMessages = async () => {
-    const userId = localStorage.getItem("current_user_id");
     if (!userId) {
       toast.error("ログイン状態が確認できません");
       router.push("/companies/new");
@@ -41,45 +41,31 @@ export default function page() {
       console.error("メッセージの取得に失敗しました", error);
     }
   };
-  const fetchPartnerName = async () => {
-    const userId = localStorage.getItem("current_user_id");
-    if (!userId) {
+  useEffect(() => {
+    const id = localStorage.getItem("current_user_id");
+    if (!id) {
       toast.error("ログイン状態が確認できません");
       router.push("/companies/new");
-      return;
-    }
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/scouts/${scoutedId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "X-User-Id": userId || "",
-          },
-        },
-      );
-      if (!res.ok) {
-        throw new Error("API通信に失敗しました");
-      }
-      const data = await res.json();
-      setPartnerName(data.partner_name);
-    } catch (error) {
-      toast.error("相手の名前の取得に失敗しました");
-      console.error("相手の名前の取得に失敗しました", error);
-    }
-  };
+    } else setUserId(id);
+  }, []);
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const headers = userId ? { "X-User-Id": userId } : null;
+  const { data: scoutData } = useFetch<{ partner_name: string }>(
+    userId ? `${BASE}/api/scouts/${scoutedId}/partner_name` : null,
+    headers,
+  );
+  const partnerName = scoutData?.partner_name ?? "";
   useEffect(() => {
+    if (!userId) return;
     fetchMessages();
-    fetchPartnerName();
-  }, [scoutedId]);
+  }, [scoutedId, userId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-  const handleSend = async (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!inputMessage.trim() || isSending) return;
-    const userId = localStorage.getItem("current_user_id");
     if (!userId) {
       toast.error("ログイン状態が確認できません");
       router.push("/companies/new");
@@ -93,7 +79,7 @@ export default function page() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-User-Id": userId || "",
+            "X-User-Id": userId,
           },
           body: JSON.stringify({ body: inputMessage }),
         },

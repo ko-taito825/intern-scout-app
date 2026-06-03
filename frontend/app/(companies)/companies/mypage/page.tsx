@@ -7,71 +7,32 @@ import {
 } from "@/app/_types/company";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useFetch } from "@/app/_hooks/useFetch";
 
 export default function page() {
   const router = useRouter();
-  const [profile, setProfile] = useState<CompanyProfileResponse | null>(null);
-  const [scouts, setScouts] = useState<SentScoutItem[]>([]);
-  const [appliedEntries, setAppliedEntries] = useState<AppliedEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [userId, setuserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const userId = localStorage.getItem("current_user_id");
-      if (!userId) {
-        router.push("/companies/new");
-        return;
-      }
-      try {
-        const authHeaders = {
-          "Content-Type": "application/json",
-          "X-User-Id": userId,
-        };
-        const [profileRes, scoutRes, entryRes] = await Promise.all([
-          fetch(
-            (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
-              "/api/company_profiles/me",
-            {
-              headers: authHeaders,
-            },
-          ),
-          fetch(
-            (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
-              "/api/scouts/sent",
-            {
-              headers: authHeaders,
-            },
-          ),
-          fetch(
-            (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
-              "/api/entries",
-            {
-              headers: authHeaders,
-            },
-          ),
-        ]);
-        if (profileRes.ok) {
-          const profileData = await profileRes.json();
-          setProfile(profileData);
-        }
-        if (scoutRes.ok) {
-          const scoutData = await scoutRes.json();
-          setScouts(scoutData);
-        }
-        if (entryRes.ok) {
-          const entryData = await entryRes.json();
-          setAppliedEntries(entryData);
-          console.log("応募データ:", entryData);
-        }
-      } catch (error) {
-        console.error("データの取得に失敗しました", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
+    const id = localStorage.getItem("current_user_id");
+    if (!id) router.push("/companies/new");
+    else setuserId(id);
   }, []);
 
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const headers = userId ? { "X-User-Id": userId } : null;
+  const { data: profile, isLoading: profileLoading } =
+    useFetch<CompanyProfileResponse>(
+      userId ? `${BASE}/api/companies/${userId}` : null,
+      headers,
+    );
+  const { data: scouts = [], isLoading: scoutLoading } = useFetch<
+    SentScoutItem[]
+  >(userId ? `${BASE}/api/companies/${userId}/sent_scouts` : null, headers);
+  const { data: appliedEntries = [], isLoading: entriesLoading } = useFetch<
+    AppliedEntry[]
+  >(userId ? `${BASE}/api/companies/${userId}/applied_entries` : null, headers);
+  const isLoading = !userId || profileLoading || scoutLoading || entriesLoading;
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center font-bold text-zinc-500">
