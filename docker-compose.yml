@@ -1,0 +1,49 @@
+version: '3'
+services:
+  db:
+    image: postgres:15
+    container_name: intern-scout-db
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: intern-scout-backend
+    environment:
+      DB_HOST: db
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+    volumes:
+      - ./backend:/rails
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: intern-scout-frontend
+    ports:
+      - "3001:3001"
+    depends_on:
+      - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+        - action: rebuild
+          path: ./frontend/package.json
+
+volumes:
+  pgdata:
