@@ -16,7 +16,7 @@ export default function page() {
   const fetchCompany = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/company_profiles/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/company_profiles/${id}`,
       );
       if (!res.ok) {
         throw new Error("APIの通信に失敗しました。");

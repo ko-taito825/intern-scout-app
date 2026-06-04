@@ -23,7 +23,7 @@ export default function page() {
     const fetchProfile = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/jobs/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/jobs/${id}`,
         );
         if (!res.ok) {
           throw new Error("募集詳細の取得に失敗しました");
@@ -50,7 +50,7 @@ export default function page() {
     }
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/jobs/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/jobs/${id}`,
         {
           method: "PATCH",
           headers: {
@@ -84,7 +84,7 @@ export default function page() {
     }
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/jobs/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/jobs/${id}`,
         {
           method: "DELETE",
           headers: {

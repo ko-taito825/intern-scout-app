@@ -19,19 +19,19 @@ export default function page() {
     else setuserId(id);
   }, []);
 
-  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const headers = userId ? { "X-User-Id": userId } : null;
   const { data: profile, isLoading: profileLoading } =
     useFetch<CompanyProfileResponse>(
-      userId ? `${BASE}/api/companies/${userId}` : null,
+      userId ? `${BASE}/api/company_profiles/me` : null,
       headers,
     );
   const { data: scouts = [], isLoading: scoutLoading } = useFetch<
     SentScoutItem[]
-  >(userId ? `${BASE}/api/companies/${userId}/sent_scouts` : null, headers);
+  >(userId ? `${BASE}/api/scouts/sent` : null, headers);
   const { data: appliedEntries = [], isLoading: entriesLoading } = useFetch<
     AppliedEntry[]
-  >(userId ? `${BASE}/api/companies/${userId}/applied_entries` : null, headers);
+  >(userId ? `${BASE}/api/entries` : null, headers);
   const isLoading = !userId || profileLoading || scoutLoading || entriesLoading;
   if (isLoading) {
     return (
@@ -43,6 +43,17 @@ export default function page() {
 
   return (
     <>
+      {profile && !profile.name && (
+        <div className="sticky top-0 z-50 flex items-center justify-between bg-yellow-400 px-6 py-3 text-sm font-bold text-yellow-900 shadow">
+          <span>⚠️ 企業名が未設定です。スカウト送信・求人管理を行うには企業プロフィールを登録してください。</span>
+          <Link
+            href="/companies/edit"
+            className="ml-4 rounded-full bg-yellow-900 px-4 py-1 text-white hover:bg-yellow-800"
+          >
+            今すぐ登録する
+          </Link>
+        </div>
+      )}
       <main className="min-h-screen bg-zinc-50 pb-20 font-sans">
         <section className="border-b border-zinc-200 bg-white px-6 py-12 shadow-sm">
           <div className="mx-auto max-w-4xl">
