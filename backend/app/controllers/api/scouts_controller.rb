@@ -1,4 +1,6 @@
 class Api::ScoutsController < ApplicationController
+  before_action :require_company_profile!, only: [ :create ]
+
   def index
     scouts = Scout.includes(company_user: :company_profile, messages: []).where(intern_user_id: current_user_id)
 

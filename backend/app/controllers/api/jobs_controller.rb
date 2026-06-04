@@ -1,4 +1,6 @@
 class Api::JobsController < ApplicationController
+  before_action :require_company_profile!, only: [ :create, :update, :destroy ]
+
   def index
     if current_user_id.present?
       company_profile = CompanyProfile.find_by(user_id: current_user_id)
