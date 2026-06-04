@@ -1,7 +1,7 @@
 require_relative "boot"
 
 require "rails/all"
-
+require "rack/cors"
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -15,7 +15,16 @@ module Backend
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
+config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        # 開発中のテストとして、一旦すべてのURL(*)からの通信を許可します
+        origins "*"
 
+        resource "*",
+          headers: :any,
+          methods: [:get, :post, :put, :patch, :delete, :options, :head]
+      end
+    end
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
