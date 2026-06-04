@@ -24,7 +24,7 @@ export default function page() {
     if (id) setUserId(id);
   }, []);
 
-  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
   const { data: internData, isLoading: internLoading } =
     useFetch<InternProfileResponse>(`${BASE}/api/interns/${id}`);
@@ -40,7 +40,7 @@ export default function page() {
     const userId = localStorage.getItem("current_user_id");
     try {
       const scoutRes = await fetch(
-        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000") +
           "/api/scouts",
         {
           method: "POST",
@@ -71,7 +71,7 @@ export default function page() {
       const scout = await scoutRes.json();
 
       const messageRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/scouts/${scout.id}/messages`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/scouts/${scout.id}/messages`,
         {
           method: "POST",
           headers: {

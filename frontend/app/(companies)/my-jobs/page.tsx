@@ -19,9 +19,9 @@ export default function page() {
     setUserId(id);
   }, []);
   const headers = userId ? { "X-User-Id": userId } : null;
-  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const { data: jobsData, isLoading: jobsLoading } = useFetch<JobPosting[]>(
-    userId ? `${BASE}/api/job_postings/my` : null,
+    userId ? `${BASE}/api/jobs` : null,
     headers,
   );
   if (jobsLoading) {

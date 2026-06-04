@@ -12,7 +12,7 @@ export default function page() {
   const fetchJobs = async () => {
     try {
       const res = await fetch(
-        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000") +
           "/api/jobs",
       );
       if (!res.ok) {

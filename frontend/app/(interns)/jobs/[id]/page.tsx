@@ -25,7 +25,7 @@ export default function page() {
     const userId = localStorage.getItem("current_user_id");
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/jobs/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/jobs/${id}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -51,7 +51,7 @@ export default function page() {
     if (!userId) return;
     try {
       const res = await fetch(
-        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000") +
           "/api/entries/me",
         {
           headers: {
@@ -83,7 +83,7 @@ export default function page() {
     const userId = localStorage.getItem("current_user_id");
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/jobs/${id}/entries`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/jobs/${id}/entries`,
         {
           method: "POST",
           headers: {

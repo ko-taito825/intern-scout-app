@@ -23,7 +23,7 @@ export default function page() {
     }
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/entries/${entryId}/entry_messages`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/entries/${entryId}/entry_messages`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export default function page() {
     }
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/entries/${entryId}`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/entries/${entryId}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -88,7 +88,7 @@ export default function page() {
     setIsSending(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/entries/${entryId}/entry_messages`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/entries/${entryId}/entry_messages`,
         {
           method: "POST",
           headers: {

@@ -18,11 +18,12 @@ export default function page() {
     }
     setUserId(id);
   }, []);
-  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const headers = userId ? { "X-User-Id": userId } : null;
   const { data: internsData, isLoading: internsLoading } = useFetch<
     InternProfileResponse[]
-  >(`${BASE}/api/interns`);
+  >(`${BASE}/api/intern_profiles`, headers);
+  console.log("internsData", internsData);
   const { data: scoutsData, isLoading: scoutsLoading } = useFetch<
     { intern_user_id: number }[]
   >(userId ? `${BASE}/api/scouts/sent` : null, headers);

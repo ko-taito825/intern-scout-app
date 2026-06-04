@@ -19,7 +19,7 @@ export default function page() {
   const handleCreate = async (data: InternProfileForm) => {
     try {
       const res = await fetch(
-        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001") +
+        (process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000") +
           "/api/intern_profiles",
         {
           method: "POST",

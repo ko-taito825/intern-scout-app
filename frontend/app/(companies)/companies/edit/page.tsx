@@ -19,7 +19,7 @@ export default function page() {
     if (!id) router.push("/companies/new");
     else setUserId(id);
   }, []);
-  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const headers = userId ? { "X-User-Id": userId } : null;
   const { data: profile, isLoading } = useFetch<CompanyProfileResponse>(
     userId ? `${BASE}/api/companies/${userId}` : null,
@@ -29,11 +29,13 @@ export default function page() {
   const handleUpdate = async (data: CompanyProfileForm) => {
     const userId = localStorage.getItem("current_user_id");
     if (!userId || !profile?.id) {
-      toast.error("ログイン状態が確認できません、再度企業としてログインしてください");
+      toast.error(
+        "ログイン状態が確認できません、再度企業としてログインしてください",
+      );
       return;
     }
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/company_profiles/${profile.id}`,
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/company_profiles/${profile.id}`,
       {
         method: "PATCH",
         headers: {

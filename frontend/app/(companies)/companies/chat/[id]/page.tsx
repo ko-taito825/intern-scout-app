@@ -23,7 +23,7 @@ export default function page() {
     }
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/scouts/${scoutedId}/messages`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/scouts/${scoutedId}/messages`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -48,7 +48,7 @@ export default function page() {
       router.push("/companies/new");
     } else setUserId(id);
   }, []);
-  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const headers = userId ? { "X-User-Id": userId } : null;
   const { data: scoutData } = useFetch<{ partner_name: string }>(
     userId ? `${BASE}/api/scouts/${scoutedId}/partner_name` : null,
@@ -74,7 +74,7 @@ export default function page() {
     setIsSending(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/scouts/${scoutedId}/messages`,
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/scouts/${scoutedId}/messages`,
         {
           method: "POST",
           headers: {

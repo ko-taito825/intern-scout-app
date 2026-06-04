@@ -18,7 +18,7 @@ export default function page() {
   }, []);
   const { data: job, isLoading: jobLoading } = useFetch<JobResponse>(
     userId
-      ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001"}/api/job_postings/${id}`
+      ? `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/job_postings/${id}`
       : null,
     headers,
   );
