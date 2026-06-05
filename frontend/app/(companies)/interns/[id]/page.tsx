@@ -27,10 +27,10 @@ export default function page() {
   const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
   const { data: internData, isLoading: internLoading } =
-    useFetch<InternProfileResponse>(`${BASE}/api/interns/${id}`);
+    useFetch<InternProfileResponse>(`${BASE}/api/intern_profiles/${id}`);
   const headers = userId ? { "X-User-Id": userId } : null;
   const { data: scoutData = [] } = useFetch<{ intern_user_id: number }[]>(
-    userId ? `${BASE}/api/scouts?intern_id=${id}` : null,
+    userId ? `${BASE}/api/scouts/sent` : null,
     headers,
   );
   const isScouted = scoutData.some(
