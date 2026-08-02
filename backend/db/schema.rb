@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_24_100924) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_08_083557) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,6 +31,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_24_100924) do
     t.text "message"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["job_id", "user_id"], name: "index_entries_on_job_id_and_user_id", unique: true
     t.index ["job_id"], name: "index_entries_on_job_id"
     t.index ["user_id"], name: "index_entries_on_user_id"
   end

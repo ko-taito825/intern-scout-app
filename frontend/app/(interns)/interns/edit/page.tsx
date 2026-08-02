@@ -23,10 +23,11 @@ export default function page() {
             },
           },
         );
-        if (res.ok) {
-          const profileData = await res.json();
-          setProfile(profileData);
+        if (!res.ok) {
+          throw new Error("プロフィールの取得に失敗しました");
         }
+        const profileData = await res.json();
+        setProfile(profileData);
       } catch (error) {
         console.error("データの取得に失敗しました", error);
         toast.error(

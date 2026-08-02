@@ -51,9 +51,10 @@ export default function page() {
   const BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
   const headers = userId ? { "X-User-Id": userId } : null;
   const { data: scoutData } = useFetch<{ partner_name: string }>(
-    userId ? `${BASE}/api/scouts/${scoutedId}/partner_name` : null,
+    userId ? `${BASE}/api/scouts/${scoutedId}` : null,
     headers,
   );
+
   const partnerName = scoutData?.partner_name ?? "";
   useEffect(() => {
     if (!userId) return;
