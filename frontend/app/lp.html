@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo Dashboard — 努力を可視化するダッシュボード</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --purple: #7c3aed;
+      --purple-light: #a78bfa;
+      --purple-dark: #4c1d95;
+      --purple-dim: #3b1d8a;
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface2: #1a1a2e;
+      --text: #f1f0ff;
+      --muted: #6b6b8a;
+      --border: rgba(124, 58, 237, 0.2);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.7;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 60px;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--purple-light);
+      letter-spacing: 0.04em;
+    }
+    .nav-cta {
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .nav-cta:hover { background: var(--purple-dark); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 6rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 4px 16px;
+      font-size: 12px;
+      color: var(--purple-light);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.06em;
+    }
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+    .hero h1 span { color: var(--purple-light); }
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 520px;
+      margin: 0 auto 2.5rem;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 32px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: #6d28d9; transform: translateY(-1px); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--purple-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 32px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s, transform 0.1s;
+    }
+    .btn-secondary:hover { border-color: var(--purple); transform: translateY(-1px); }
+
+    /* ─── DEMO MOCKUP ─── */
+    .mockup-wrap {
+      margin-top: 4rem;
+      width: 100%;
+      max-width: 860px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: 0 0 80px rgba(124, 58, 237, 0.12);
+    }
+    .mockup-bar {
+      background: #0f0f1a;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    .mockup-body {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+    .widget {
+      background: var(--surface);
+      padding: 1.25rem 1.5rem;
+      min-height: 120px;
+    }
+    .widget-label {
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .widget-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--purple-light);
+    }
+    .widget-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .progress-bar-bg {
+      background: var(--surface2);
+      border-radius: 99px;
+      height: 6px;
+      margin-top: 0.75rem;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--purple-dark), var(--purple-light));
+      border-radius: 99px;
+    }
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .task-check {
+      width: 14px; height: 14px;
+      border-radius: 4px;
+      border: 1px solid var(--purple);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .task-check.done { background: var(--purple); border-color: var(--purple); }
+    .task-check.done::after { content: "✓"; font-size: 9px; color: white; }
+    .quote-text {
+      font-size: 11px;
+      color: var(--purple-light);
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    /* ─── SECTIONS ─── */
+    section { padding: 6rem 2rem; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .section-label {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      color: var(--purple);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+    .section-title span { color: var(--purple-light); }
+    .section-desc { color: var(--muted); max-width: 540px; font-size: 0.95rem; }
+
+    /* ─── FEATURES ─── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 3rem;
+    }
+    .feature-card {
+      background: var(--surface);
+      padding: 2rem;
+      transition: background 0.2s;
+    }
+    .feature-card:hover { background: #141420; }
+    .feature-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      margin-bottom: 1rem;
+    }
+    .feature-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+    .feature-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* ─── HOW TO ─── */
+    .steps { margin-top: 3rem; display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex;
+      gap: 1.5rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--purple-light);
+      flex-shrink: 0;
+    }
+    .step h3 { font-size: 16px; font-weight: 600; margin-bottom: 0.4rem; }
+    .step p { font-size: 13px; color: var(--muted); }
+    .step code {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 12px;
+      color: var(--purple-light);
+      font-family: monospace;
+    }
+
+    /* ─── CTA ─── */
+    .cta-section {
+      text-align: center;
+      padding: 6rem 2rem;
+      position: relative;
+    }
+    .cta-section::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px; height: 300px;
+      background: radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-section h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -0.02em;
+    }
+    .cta-section p { color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      .mockup-body { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">Todo Dashboard</span>
+  <a href="#" class="nav-cta">今すぐ使う</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="hero-badge">努力を可視化する</span>
+  <h1>あなたの<span>一日</span>を、<br>最高の一日にする</h1>
+  <p>タスク・タイマー・進捗・名言——必要なものをひとつの画面に。毎日の努力をダッシュボードで記録し続けよう。</p>
+  <div class="hero-buttons">
+    <a href="#" class="btn-primary">今すぐ無料で使う →</a>
+    <a href="#features" class="btn-secondary">機能を見る</a>
+  </div>
+
+  <!-- MOCKUP -->
+  <div class="mockup-wrap">
+    <div class="mockup-bar">
+      <div class="dot dot-r"></div>
+      <div class="dot dot-y"></div>
+      <div class="dot dot-g"></div>
+    </div>
+    <div class="mockup-body">
+      <div class="widget">
+        <div class="widget-label">タイマー</div>
+        <div class="widget-value">24:00</div>
+        <div class="widget-sub">ポモドーロ集中中</div>
+      </div>
+      <div class="widget">
+        <div class="widget-label">今日の進捗</div>
+        <div class="widget-value">68%</div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:68%"></div></div>
+        <div class="widget-sub" style="margin-top:8px">タスク 5/7 完了</div>
+      </div>
+      <div class="widget">
+        <div class="widget-label">今日のタスク</div>
+        <div class="task-item"><div class="task-check done"></div>朝のルーティン</div>
+        <div class="task-item"><div class="task-check done"></div>コードレビュー</div>
+        <div class="task-item"><div class="task-check"></div>ドキュメント更新</div>
+        <div class="task-item"><div class="task-check"></div>プルリク作成</div>
+      </div>
+      <div class="widget" style="grid-column: span 2">
+        <div class="widget-label">今週のレビュー</div>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <div style="flex:1;background:var(--surface2);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Mon</div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:90%"></div></div>
+          </div>
+          <div style="flex:1;background:var(--surface2);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Tue</div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:60%"></div></div>
+          </div>
+          <div style="flex:1;background:var(--surface2);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Wed</div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:80%"></div></div>
+          </div>
+          <div style="flex:1;background:var(--surface2);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Thu</div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:40%"></div></div>
+          </div>
+          <div style="flex:1;background:var(--surface2);border-radius:8px;padding:10px;">
+            <div style="font-size:10px;color:var(--muted);margin-bottom:4px">Fri</div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:70%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="widget">
+        <div class="widget-label">今日の名言</div>
+        <div class="quote-text">"Overwhelming effort produces overwhelming results."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="background: var(--surface);">
+  <div class="container">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">必要な機能が、<span>全部入り</span></h2>
+    <p class="section-desc">バラバラなツールを使い分ける必要はもうない。ひとつの画面で、今日やるべきことがすべて見える。</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">⏱</div>
+        <h3>ポモドーロタイマー</h3>
+        <p>集中セッションを25分単位で管理。休憩のタイミングを自動で知らせてくれる。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✅</div>
+        <h3>タスク管理</h3>
+        <p>今日やること・週間タスクをシンプルに管理。チェックするたびに達成感が積み上がる。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>進捗の可視化</h3>
+        <p>日々の達成率をグラフで確認。努力が数字になって見えるから、継続できる。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🗓</div>
+        <h3>週間レビュー</h3>
+        <p>今週何日努力できたかを一目で確認。週の振り返りを習慣にする。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>デイリー名言</h3>
+        <p>毎日切り替わる名言がモチベーションを底上げ。今日も前を向いて動き出せる。</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌙</div>
+        <h3>ダークデザイン</h3>
+        <p>目に優しい黒×紫のテーマ。深夜の作業でも目が疲れにくい。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO -->
+<section id="howto">
+  <div class="container">
+    <div class="section-label">How to start</div>
+    <h2 class="section-title">3ステップで<span>すぐ使える</span></h2>
+    <p class="section-desc">インストール不要。ブラウザさえあれば今すぐ始められる。</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <h3>URLにアクセス</h3>
+          <p>ブラウザで Todo Dashboard のURLを開くだけ。アカウント登録不要。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <h3>今日のタスクを入力</h3>
+          <p>やることリストに今日のタスクを追加する。3つでも10個でもOK。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <h3>タイマーをスタート</h3>
+          <p>あとはタイマーを押して集中するだけ。完了したタスクにチェックを入れて、今日の努力を積み上げよう。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2>今日の努力を、<br>記録しよう。</h2>
+  <p>無料・登録不要。ブラウザですぐ使える。</p>
+  <a href="#" class="btn-primary" style="font-size:16px; padding:16px 40px;">今すぐ無料で使う →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Todo Dashboard. Built with ❤️ and 🔥</p>
+</footer>
+
+</body>
+</html>
